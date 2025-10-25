@@ -1,0 +1,23 @@
+import "./styles.css";
+import Header from "../components/Header.jsx";
+import { getAuthenticatedAppForUser } from "../lib/firebase/serverApp";
+
+export const dynamic = "force-dynamic";
+
+export const metadata = {
+  title: "The Therapy Compass",
+  description: "Find clinicians, read verified patient reviews, and view AI summaries.",
+};
+
+export default async function RootLayout({ children }) {
+  const { currentUser } = await getAuthenticatedAppForUser();
+  return (
+    <html lang="en">
+      <body>
+        <Header initialUser={currentUser?.toJSON()} />
+        <main>{children}</main>
+      </body>
+    </html>
+  );
+}
+// layout implemented directly in this file for JSX usage

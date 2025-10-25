@@ -1,0 +1,137 @@
+[
+  {
+    "name": "Dr. Elena Rodriguez",
+    "specialization": "Trauma & PTSD",
+    "modalities": ["EMDR", "Somatic Experiencing"],
+    "city": "New York, NY",
+    "profilePicture": "https://example.com/ai-images/elena_rodriguez.jpg",
+    "avgStyleMatch": 0,
+    "avgCulturalComp": 0
+  },
+  {
+    "name": "David Kim, LCSW",
+    "specialization": "Anxiety & Depression",
+    "modalities": ["CBT", "Mindfulness", "ACT"],
+    "city": "Chicago, IL",
+    "profilePicture": "https://example.com/ai-images/david_kim.jpg",
+    "avgStyleMatch": 0,
+    "avgCulturalComp": 0
+  },
+  {
+    "name": "Dr. Marcus Cole",
+    "specialization": "Couples & Family Therapy",
+    "modalities": ["Gottman Method", "EFT"],
+    "city": "Los Angeles, CA",
+    "profilePicture": "https://example.com/ai-images/marcus_cole.jpg",
+    "avgStyleMatch": 0,
+    "avgCulturalComp": 0
+  },
+  {
+    "name": "Sarah Chen, LMFT",
+    "specialization": "LGBTQ+ & Identity",
+    "modalities": ["Narrative Therapy", "Solution-Focused Therapy"],
+    "city": "San Francisco, CA",
+    "profilePicture": "https://example.com/ai-images/sarah_chen.jpg",
+    "avgStyleMatch": 0,
+    "avgCulturalComp": 0
+  },
+  {
+    "name": "Ben Carter, Psy.D",
+    "specialization": "OCD & Phobias",
+    "modalities": ["ERP", "CBT"],
+    "city": "Boston, MA",
+    "profilePicture": "https://example.com/ai-images/ben_carter.jpg",
+    "avgStyleMatch": 0,
+    "avgCulturalComp": 0
+  },
+  {
+    "name": "Dr. Aisha Bello",
+    "specialization": "Perinatal & Postpartum",
+    "modalities": ["Interpersonal Therapy (IPT)", "DBT"],
+    "city": "Atlanta, GA",
+    "profilePicture": "https://example.com/ai-images/aisha_bello.jpg",
+    "avgStyleMatch": 0,
+    "avgCulturalComp": 0
+  },
+  {
+    "name": "Michael Thompson, LPC",
+    "specialization": "Men's Issues & Anger",
+    "modalities": ["Psychodynamic", "CBT"],
+    "city": "Denver, CO",
+    "profilePicture": "https://example.com/ai-images/michael_thompson.jpg",
+    "avgStyleMatch": 0,
+    "avgCulturalComp": 0
+  },
+  {
+    "name": "Dr. Emily Sato",
+    "specialization": "Child & Adolescent",
+    "modalities": ["Play Therapy", "Family Systems"],
+    "city": "Seattle, WA",
+    "profilePicture": "https://example.com/ai-images/emily_sato.jpg",
+    "avgStyleMatch": 0,
+    "avgCulturalComp": 0
+  },
+  {
+    "name": "Kevin Liu, LCSW",
+    "specialization": "Grief & Loss",
+    "modalities": ["Compassion-Focused", "ACT"],
+    "city": "Portland, OR",
+    "profilePicture": "https://example.com/ai-images/kevin_liu.jpg",
+    "avgStyleMatch": 0,
+    "avgCulturalComp": 0
+  },
+  {
+    "name": "Dr. Jasmine Patel",
+    "specialization": "Cultural & Systemic Issues",
+    "modalities": ["Liberation Psychology", "Narrative Therapy"],
+    "city": "Oakland, CA",
+    "profilePicture": "https://example.com/ai-images/jasmine_patel.jpg",
+    "avgStyleMatch": 0,
+    "avgCulturalComp": 0
+  },
+  {
+    "name": "Ryan Glover, LMHC",
+    "specialization": "Addiction & Recovery",
+    "modalities": ["MI", "DBT", "Group Therapy"],
+    "city": "Miami, FL",
+    "profilePicture": "https://example.com/ai-images/ryan_glover.jpg",
+    "avgStyleMatch": 0,
+    "avgCulturalComp": 0
+  },
+  {
+    "name": "Dr. Chloe Zhang",
+    "specialization": "Eating Disorders",
+    "modalities": ["HAES", "DBT", "FBT"],
+    "city": "Austin, TX",
+    "profilePicture": "https://example.com/ai-images/chloe_zhang.jpg",
+    "avgStyleMatch": 0,
+    "avgCulturalComp": 0
+  },
+  {
+    "name": "Isaac Cohen, Psy.D",
+    "specialization": "Performance & Sports Psychology",
+    "modalities": ["CBT", "Mindfulness"],
+    "city": "Phoenix, AZ",
+    "profilePicture": "https://example.com/ai-images/isaac_cohen.jpg",
+    "avgStyleMatch": 0,
+    "avgCulturalComp": 0
+  },
+  {
+    "name": "Dr. Fiona Gallagher",
+    "specialization": "Neurodiversity & Autism",
+    "modalities": ["Strengths-Based", "DIR/Floortime"],
+    "city": "Minneapolis, MN",
+    "profilePicture": "https://example.com/ai-images/fiona_gallagher.jpg",
+    "avgStyleMatch": 0,
+    "avgCulturalComp": 0
+  },
+  {
+    "name": "Nathanial Reed, LMFT",
+    "specialization": "Sex Therapy & Relationships",
+    "modalities": ["EFT", "Psychodynamic"],
+    "city": "Philadelphia, PA",
+    "profilePicture": "https://example.com/ai-images/nathanial_reed.jpg",
+    "avgStyleMatch": 0,
+    "avgCulturalComp": 0
+  }
+]
