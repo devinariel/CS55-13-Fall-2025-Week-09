@@ -20,14 +20,24 @@
     "runConfig": {
       "secrets": [
         {
-          "secret": "NEXT_PUBLIC_FIREBASE_API_KEY",
-          "environmentVariable": "NEXT_PUBLIC_FIREBASE_API_KEY"
+          "secret": "FIREBASE_API_KEY",
+          "environmentVariable": "FIREBASE_API_KEY",
+          "availability": ["RUNTIME"]
         },
         {
           "secret": "DATABASE_PASSWORD",
-          "environmentVariable": "DATABASE_PASSWORD"
+          "environmentVariable": "DATABASE_PASSWORD",
+          "availability": ["RUNTIME"]
         }
       ]
-    }
+    },
+    "environmentVariables": [
+      {
+        "variable": "FIREBASE_CONFIG",
+        "value": "YOUR_FIREBASE_CONFIG_VALUE",
+        "availability": ["BUILD", "RUNTIME"]
+      }
+    ]
   }
 }
+
