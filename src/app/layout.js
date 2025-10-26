@@ -20,4 +20,5 @@ export default async function RootLayout({ children }) {
     </html>
   );
 }
-// layout implemented directly in this file for JSX usage
+// layout implemented directly in this file for JSX usage 
+// since Header needs a hook and can't be a server component
