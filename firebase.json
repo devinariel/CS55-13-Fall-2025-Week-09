@@ -1,27 +1,13 @@
 {
   "emulators": {
-    "auth": {
-      "port": 9099
-    },
-    "functions": {
-      "port": 5001
-    },
-    "firestore": {
-      "port": 8080
-    },
-    "database": {
-      "port": 9000
-    },
-    "storage": {
-      "port": 9199
-    },
-    "ui": {
-      "enabled": true
-    },
+    "auth": { "port": 9099 },
+    "functions": { "port": 5001 },
+    "firestore": { "port": 8080 },
+    "database": { "port": 9000 },
+    "storage": { "port": 9199 },
+    "ui": { "enabled": true },
     "singleProjectMode": true,
-    "hosting": {
-      "port": 5000
-    }
+    "hosting": { "port": 5000 }
   },
   "firestore": {
     "rules": "firestore.rules",
@@ -29,5 +15,19 @@
   },
   "storage": {
     "rules": "storage.rules"
+  },
+  "apphosting": {
+    "runConfig": {
+      "secrets": [
+        {
+          "secret": "NEXT_PUBLIC_FIREBASE_API_KEY",
+          "environmentVariable": "NEXT_PUBLIC_FIREBASE_API_KEY"
+        },
+        {
+          "secret": "DATABASE_PASSWORD",
+          "environmentVariable": "DATABASE_PASSWORD"
+        }
+      ]
+    }
   }
 }
