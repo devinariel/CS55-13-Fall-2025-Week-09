@@ -1,6 +1,7 @@
 {
   "projects": {
-    "thetherapycompass": "the-therapy-compass"
+    "thetherapycompass": "the-therapy-compass",
+    "default": "the-therapy-compass"
   },
   "targets": {},
   "etags": {}

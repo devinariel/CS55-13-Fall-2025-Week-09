@@ -1,43 +1,79 @@
 {
   "emulators": {
-    "auth": { "port": 9099 },
-    "functions": { "port": 5001 },
-    "firestore": { "port": 8080 },
-    "database": { "port": 9000 },
-    "storage": { "port": 9199 },
-    "ui": { "enabled": true },
+    "auth": {
+      "port": 9099
+    },
+    "functions": {
+      "port": 5001
+    },
+    "firestore": {
+      "port": 8080
+    },
+    "database": {
+      "port": 9000
+    },
+    "storage": {
+      "port": 9199
+    },
+    "ui": {
+      "enabled": true
+    },
     "singleProjectMode": true,
-    "hosting": { "port": 5000 }
+    "hosting": {
+      "port": 5000
+    }
   },
   "firestore": {
     "rules": "firestore.rules",
-    "indexes": "firestore.indexes.json"
+    "indexes": "firestore.indexes.json",
+    "database": "(default)"
   },
   "storage": {
-    "rules": "storage.rules"
+    "rules": "storage.rules",
+    "bucket": "the-therapy-compass.firebasestorage.app"
   },
-  "apphosting": {
-    "runConfig": {
-      "secrets": [
+  "apphosting": [
+    {
+      "runConfig": {
+        "secrets": [
+          {
+            "secret": "FIREBASE_API_KEY",
+            "environmentVariable": "FIREBASE_API_KEY",
+            "availability": [
+              "RUNTIME"
+            ]
+          },
+          {
+            "secret": "DATABASE_PASSWORD",
+            "environmentVariable": "DATABASE_PASSWORD",
+            "availability": [
+              "RUNTIME"
+            ]
+          }
+        ]
+      },
+      "environmentVariables": [
         {
-          "secret": "FIREBASE_API_KEY",
-          "environmentVariable": "FIREBASE_API_KEY",
-          "availability": ["RUNTIME"]
-        },
-        {
-          "secret": "DATABASE_PASSWORD",
-          "environmentVariable": "DATABASE_PASSWORD",
-          "availability": ["RUNTIME"]
+          "variable": "FIREBASE_CONFIG",
+          "value": "YOUR_FIREBASE_CONFIG_VALUE",
+          "availability": [
+            "BUILD",
+            "RUNTIME"
+          ]
         }
       ]
     },
-    "environmentVariables": [
-      {
-        "variable": "FIREBASE_CONFIG",
-        "value": "YOUR_FIREBASE_CONFIG_VALUE",
-        "availability": ["BUILD", "RUNTIME"]
-      }
-    ]
-  }
+    {
+      "backendId": "thetherapycompass",
+      "rootDir": "/",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "functions"
+      ],
+      "alwaysDeployFromSource": false
+    }
+  ]
 }
-
