@@ -1,4 +1,4 @@
-// The filters shown on the restaurant listings page
+// The filters shown on the clinician listings page
 
 import Tag from "@/src/components/Tag.jsx";
 

@@ -44,7 +44,7 @@ const ClinicianDetails = ({
         <div className="details">
           <h2>{clinician.name}</h2>
 
-          <div className="restaurant__rating">
+          <div className="clinician__rating">
             <ul>{renderStars(clinician.avgRating)}</ul>
 
             <span>({clinician.numRatings})</span>

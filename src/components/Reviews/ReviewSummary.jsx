@@ -13,11 +13,11 @@ import { getFirestore } from "firebase/firestore";
 export async function GeminiSummary({ clinicianId }) {
   // get an authenticated Firebase server app for the current user
   const { firebaseServerApp } = await getAuthenticatedAppForUser();
-  // fetch reviews for the restaurant from Firestore
+  // fetch reviews for the clinician from Firestore
   const reviews = await getReviewsByClinicianId(
     // create a Firestore instance from the server app
     getFirestore(firebaseServerApp),
-    // pass the restaurant ID to fetch its reviews
+    // pass the clinician ID to fetch its reviews
     clinicianId
   );
 
@@ -52,7 +52,7 @@ export async function GeminiSummary({ clinicianId }) {
 
     // return JSX that shows the summary text and a note about Gemini
     return (
-      <div className="restaurant__review_summary">
+      <div className="clinician__review_summary">
         <p>{text}</p>
         <p>✨ Summarized with Gemini</p>
       </div>
@@ -68,7 +68,7 @@ export async function GeminiSummary({ clinicianId }) {
 export function GeminiSummarySkeleton() {
   // render placeholder copy while waiting for Gemini
   return (
-    <div className="restaurant__review_summary">
+    <div className="clinician__review_summary">
       <p>✨ Summarizing reviews with Gemini...</p>
     </div>
   );

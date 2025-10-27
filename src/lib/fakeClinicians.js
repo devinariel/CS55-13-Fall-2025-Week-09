@@ -24,11 +24,11 @@ export async function generateFakeCliniciansAndReviews() {
 
       const ratingData = {
         rating:
-          randomData.restaurantReviews[
-            randomNumberBetween(0, randomData.restaurantReviews.length - 1)
+          randomData.clinicianReviews[
+            randomNumberBetween(0, randomData.clinicianReviews.length - 1)
           ].rating,
-        text: randomData.restaurantReviews[
-          randomNumberBetween(0, randomData.restaurantReviews.length - 1)
+        text: randomData.clinicianReviews[
+          randomNumberBetween(0, randomData.clinicianReviews.length - 1)
         ].text,
         userId: `User #${randomNumberBetween()}`,
         timestamp: ratingTimestamp,
@@ -46,15 +46,15 @@ export async function generateFakeCliniciansAndReviews() {
 
     const clinicianData = {
       specialty:
-        randomData.restaurantCategories[
-          randomNumberBetween(0, randomData.restaurantCategories.length - 1)
+        randomData.clinicianSpecialties[
+          randomNumberBetween(0, randomData.clinicianSpecialties.length - 1)
         ],
-      name: randomData.restaurantNames[
-        randomNumberBetween(0, randomData.restaurantNames.length - 1)
+      name: randomData.clinicianNames[
+        randomNumberBetween(0, randomData.clinicianNames.length - 1)
       ],
       avgRating,
-      location: randomData.restaurantCities[
-        randomNumberBetween(0, randomData.restaurantCities.length - 1)
+      location: randomData.clinicianCities[
+        randomNumberBetween(0, randomData.clinicianCities.length - 1)
       ],
       numRatings: ratingsData.length,
       sumRating: ratingsData.reduce(
