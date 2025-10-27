@@ -6,28 +6,29 @@ import { cookies } from "next/headers";
 import { initializeServerApp, initializeApp, getApps } from "firebase/app";
 import { getAuth } from "firebase/auth";
 
-// Reads individual FIREBASE_* environment variables set by secrets
+// Reads individual TTC_FIREBASE_* environment variables set by secrets
 function buildServerConfigFromEnv() {
-  console.log("Building server config from individual ENV variables...");
-  const apiKey = process.env.FIREBASE_API_KEY;
-  const authDomain = process.env.FIREBASE_AUTH_DOMAIN;
-  const projectId = process.env.FIREBASE_PROJECT_ID;
-  const storageBucket = process.env.FIREBASE_STORAGE_BUCKET;
-  const messagingSenderId = process.env.FIREBASE_MESSAGING_SENDER_ID;
-  const appId = process.env.FIREBASE_APP_ID;
+  console.log("Building server config from individual TTC_FIREBASE_* ENV variables...");
+  // Use the new TTC_ prefix
+  const apiKey = process.env.TTC_FIREBASE_API_KEY;
+  const authDomain = process.env.TTC_FIREBASE_AUTH_DOMAIN;
+  const projectId = process.env.TTC_FIREBASE_PROJECT_ID;
+  const storageBucket = process.env.TTC_FIREBASE_STORAGE_BUCKET;
+  const messagingSenderId = process.env.TTC_FIREBASE_MESSAGING_SENDER_ID;
+  const appId = process.env.TTC_FIREBASE_APP_ID;
 
   // Log found values for debugging
-  console.log(`FIREBASE_API_KEY found: ${!!apiKey}`);
-  console.log(`FIREBASE_PROJECT_ID found: ${!!projectId}`);
-  console.log(`FIREBASE_AUTH_DOMAIN found: ${!!authDomain}`);
-  console.log(`FIREBASE_STORAGE_BUCKET found: ${!!storageBucket}`);
-  console.log(`FIREBASE_MESSAGING_SENDER_ID found: ${!!messagingSenderId}`);
-  console.log(`FIREBASE_APP_ID found: ${!!appId}`);
+  console.log(`TTC_FIREBASE_API_KEY found: ${!!apiKey}`);
+  console.log(`TTC_FIREBASE_PROJECT_ID found: ${!!projectId}`);
+  console.log(`TTC_FIREBASE_AUTH_DOMAIN found: ${!!authDomain}`);
+  console.log(`TTC_FIREBASE_STORAGE_BUCKET found: ${!!storageBucket}`);
+  console.log(`TTC_FIREBASE_MESSAGING_SENDER_ID found: ${!!messagingSenderId}`);
+  console.log(`TTC_FIREBASE_APP_ID found: ${!!appId}`);
 
 
   // Critical validation
   if (!apiKey || !projectId) {
-      console.error("Missing critical FIREBASE_API_KEY or FIREBASE_PROJECT_ID env var. Check App Hosting secrets.");
+      console.error("Missing critical TTC_FIREBASE_API_KEY or TTC_FIREBASE_PROJECT_ID env var. Check App Hosting secrets.");
       return null;
   }
 
@@ -48,7 +49,7 @@ export async function getAuthenticatedAppForUser() {
   const config = buildServerConfigFromEnv(); // Use the function that reads individual vars
   if (!config) {
     throw new Error(
-      "Server-side Firebase initialization failed. Ensure required FIREBASE_* environment variables (from secrets) are set and accessible. Check server logs."
+      "Server-side Firebase initialization failed. Ensure required TTC_FIREBASE_* environment variables (from secrets) are set and accessible. Check server logs."
     );
   }
 
@@ -86,3 +87,4 @@ export function getServerFirebaseApp() {
    const appName = `server-app-${Date.now()}`;
    return existingApp ?? initializeApp(config, appName);
 }
+
