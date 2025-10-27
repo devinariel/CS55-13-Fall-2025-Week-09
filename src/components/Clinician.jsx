@@ -1,14 +1,16 @@
 "use client";
 
-import { React, useState, useEffect, Suspense } from "react";
+// Removed duplicate React import, combined useState/useEffect
+import React, { useState, useEffect, Suspense } from "react";
 import dynamic from "next/dynamic";
 import { getClinicianSnapshotById } from "../lib/firebase/firestore.js";
 import { useUser } from "../lib/getUser.js";
-import ClinicianDetails from "./ClinicianDetails.jsx";
+import ClinicianDetails from "./ClinicianDetails.jsx"; // Assuming this path is correct relative to Clinician.jsx
 import { updateClinicianImage } from "../lib/firebase/storage.js";
 
-const ReviewDialog = dynamic(() => import("./ReviewDialog.jsx"));
+const ReviewDialog = dynamic(() => import("./ReviewDialog.jsx")); // Assuming this path is correct
 
+// Kept the first, more complete component definition
 export default function Clinician({ id, initialClinician, initialUserId, children }) {
   const [clinicianDetails, setClinicianDetails] = useState(initialClinician);
   const [isOpen, setIsOpen] = useState(false);
@@ -24,8 +26,13 @@ export default function Clinician({ id, initialClinician, initialUserId, childre
     const image = target.files ? target.files[0] : null;
     if (!image) return;
 
-    const imageURL = await updateClinicianImage(id, image);
-    setClinicianDetails({ ...clinicianDetails, photo: imageURL });
+    try {
+      const imageURL = await updateClinicianImage(id, image);
+      setClinicianDetails((prevDetails) => ({ ...prevDetails, photo: imageURL }));
+    } catch (error) {
+      console.error("Error updating clinician image:", error);
+      // Optionally show an error message to the user
+    }
   }
 
   const handleClose = () => {
@@ -34,10 +41,19 @@ export default function Clinician({ id, initialClinician, initialUserId, childre
   };
 
   useEffect(() => {
-    return getClinicianSnapshotById(id, (data) => {
-      setClinicianDetails(data);
+    // Check if id is valid before subscribing
+    if (!id) return;
+    const unsubscribe = getClinicianSnapshotById(id, (data) => {
+      if (data) { // Ensure data exists before setting state
+        setClinicianDetails(data);
+      } else {
+        console.warn(`Clinician data not found for id: ${id}`);
+        // Handle case where clinician data might become null/undefined
+      }
     });
-  }, [id]);
+    // Return the unsubscribe function for cleanup
+    return () => unsubscribe();
+  }, [id]); // Dependency array is correct
 
   return (
     <>
@@ -45,53 +61,23 @@ export default function Clinician({ id, initialClinician, initialUserId, childre
         clinician={clinicianDetails}
         userId={userId}
         handleClinicianImage={handleClinicianImage}
-        setIsOpen={setIsOpen}
-        isOpen={isOpen}
+        setIsOpen={setIsOpen} // Prop to open the dialog
+        isOpen={isOpen}       // Prop to check if dialog should be open (though ReviewDialog controls its own state)
       >
         {children}
       </ClinicianDetails>
       {userId && (
-        <Suspense fallback={<p>Loading...</p>}>
+        <Suspense fallback={<p>Loading review dialog...</p>}>
           <ReviewDialog
             isOpen={isOpen}
             handleClose={handleClose}
             review={review}
             onChange={onChange}
             userId={userId}
-            id={id}
+            clinicianId={id} // Pass clinician id correctly
           />
         </Suspense>
       )}
     </>
-  );
-}
-import { getClinicianSnapshotById } from "../lib/firebase/firestore.js";
-import ClinicianDetails from "./ClinicianDetails.jsx";
-import { updateClinicianImage } from "../lib/firebase/storage.js";
-
-export default function Clinician({ id, initialClinician, children }) {
-  const [clinicianDetails, setClinicianDetails] = useState(initialClinician);
-
-  async function handleClinicianImage(target) {
-    const image = target.files[0];
-    if (!image) return;
-    const imageURL = await updateClinicianImage(id, image);
-    setClinicianDetails({ ...clinicianDetails, photo: imageURL });
-  }
-
-  useEffect(() => {
-    if (!id) return;
-    return getClinicianSnapshotById(id, (data) => setClinicianDetails(data));
-  }, [id]);
-
-  return (
-    <section>
-      <ClinicianDetails
-        clinician={clinicianDetails}
-        handleClinicianImage={handleClinicianImage}
-      >
-        {children}
-      </ClinicianDetails>
-    </section>
   );
 }
