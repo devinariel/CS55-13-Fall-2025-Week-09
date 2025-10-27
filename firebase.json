@@ -32,7 +32,7 @@
     "rules": "storage.rules",
     "bucket": "the-therapy-compass.firebasestorage.app"
   },
-  "apphosting": [
+  "apphosting": [ 
     {
       "runConfig": {
         "secrets": [
@@ -67,7 +67,7 @@
             "availability": ["RUNTIME"]
           },
           {
-            "secret": "DATABASE_PASSWORD",
+            "secret": "DATABASE_PASSWORD", 
             "environmentVariable": "DATABASE_PASSWORD",
             "availability": ["RUNTIME"]
           },
@@ -78,6 +78,7 @@
           }
         ]
       },
+      
       "backendId": "thetherapycompass",
       "rootDir": "/",
       "ignore": [
@@ -91,3 +92,4 @@
     }
   ]
 }
+
