@@ -54,10 +54,10 @@
       },
       "environmentVariables": [
         {
-          "variable": "FIREBASE_CONFIG",
-          "value": "{\"apiKey\":\"AIzaSyB1XF3ZTH7FmN_V6OOqlz01gKyKRzbbdhA\",\"authDomain\":\"the-therapy-compass.firebaseapp.com\",\"projectId\":\"the-therapy-compass\",\"storageBucket\":\"the-therapy-compass.firebasestorage.app\",\"messagingSenderId\":\"489155622257\",\"appId\":\"1:489155622257:web:bf99cea7b388504fee72d0\"}",
-          "availability": ["BUILD", "RUNTIME"]
-        }
+   "variable": "FIREBASE_CONFIG",
+   "value": "{\"apiKey\":\"AIzaSyB1XF3ZTH7FmN_V6OOqlz01gKyKRzbbdhA\",\"authDomain\":\"the-therapy-compass.firebaseapp.com\",\"projectId\":\"the-therapy-compass\",\"storageBucket\":\"the-therapy-compass.firebasestorage.app\",\"messagingSenderId\":\"489155622257\",\"appId\":\"1:489155622257:web:bf99cea7b388504fee72d0\"}",
+   "availability": ["BUILD", "RUNTIME"]
+ }
       ]
     },
     {
