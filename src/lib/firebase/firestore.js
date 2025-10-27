@@ -1,5 +1,5 @@
 // Import generator for fake clinicians and reviews used in dev/testing
-import { generateFakeCliniciansAndReviews } from "../fakeRestaurants.js";
+import { generateFakeCliniciansAndReviews } from "../fakeClinicians.js";
 
 // Import Firestore functions we use across this module
 import {
