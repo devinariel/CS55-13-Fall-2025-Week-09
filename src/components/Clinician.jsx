@@ -65,7 +65,6 @@ export default function Clinician({ id, initialClinician, initialUserId, childre
     </>
   );
 }
-import { useState, useEffect } from "react";
 import { getClinicianSnapshotById } from "../lib/firebase/firestore.js";
 import ClinicianDetails from "./ClinicianDetails.jsx";
 import { updateClinicianImage } from "../lib/firebase/storage.js";
