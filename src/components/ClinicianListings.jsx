@@ -4,7 +4,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import Filters from "./Filters";
 import ClinicianCard from "./ClinicianCard";
 import ClinicianDetail from "./ClinicianDetail";
-import { getClinicians } from "../lib/firebase/firestore";
+import { getClinicians } from "../lib/firebase/therapyFirestore";
 
 export default function ClinicianListings() {
   const [clinicians, setClinicians] = useState([]);
