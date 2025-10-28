@@ -26,21 +26,16 @@ function buildConfigFromEnv() {
 	};
 }
 
-let firebaseApp;
-try {
-	// If an app is already initialized (e.g., during HMR), reuse it
-	if (getApps().length > 0) {
-		firebaseApp = getApps()[0];
-	} else {
-		// Try no-arg initializeApp (works on Firebase Hosting)
-		firebaseApp = initializeApp();
-	}
-} catch (err) {
-	const cfg = buildConfigFromEnv();
-	if (!cfg) throw new Error("Firebase config not found in environment; set NEXT_PUBLIC_FIREBASE_* or FIREBASE_*");
-	firebaseApp = initializeApp(cfg);
+function getClientFirebaseApp() {
+  if (getApps().length > 0) {
+    return getApps()[0];
+  }
+  const config = buildConfigFromEnv();
+  if (!config) throw new Error("Firebase config not found in environment; set NEXT_PUBLIC_FIREBASE_* or FIREBASE_*");
+  return initializeApp(config);
 }
 
+const firebaseApp = getClientFirebaseApp();
 export const auth = getAuth(firebaseApp);
 export const db = getFirestore(firebaseApp);
 export const storage = getStorage(firebaseApp);

@@ -10,6 +10,7 @@ import {
   query,
   where,
   Timestamp,
+  deleteDoc,
 } from 'firebase/firestore';
 
 import { db } from './clientApp';
