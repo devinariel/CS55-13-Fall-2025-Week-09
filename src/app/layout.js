@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "The Therapy Compass",
-  description: "Find clinicians, read verified patient reviews, and view AI summaries.",
+  description: "Find clinicians, read verified patient reviews.",
 };
 
 export default async function RootLayout({ children }) {
