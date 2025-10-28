@@ -17,7 +17,7 @@ export default function ReviewForm({ clinicianId, onSubmitted }) {
   }, []);
 
   if (!user) {
-    return <p className="text-sm text-[#161d23]">Sign in to submit a verified review.</p>;
+    return <p className="text-sm text-[#212C1B]">Sign in to submit a verified review.</p>;
   }
 
   const handleSubmit = async (e) => {
@@ -36,14 +36,14 @@ export default function ReviewForm({ clinicianId, onSubmitted }) {
   };
 
   const starInput = (value, setter) => (
-    <select value={value} onChange={(e) => setter(Number(e.target.value))} className="border rounded px-2 py-1">
+    <select value={value} onChange={(e) => setter(Number(e.target.value))} className="border rounded px-2 py-1 bg-white text-[#212C1B]">
       {[1,2,3,4,5].map((n) => <option key={n} value={n}>{n} ★</option>)}
     </select>
   );
 
   return (
-    <form onSubmit={handleSubmit} className="bg-[#f7fff7] p-4 rounded">
-      <h4 className="font-semibold text-[#0f444c]">Submit a Verified Review</h4>
+    <form onSubmit={handleSubmit} className="bg-white p-4 rounded-lg shadow">
+      <h4 className="font-semibold text-[#657F38]">Submit a Verified Review</h4>
       <div className="grid grid-cols-2 gap-2 mt-2">
         <label className="text-sm">Style Match {starInput(styleMatch, setStyleMatch)}</label>
         <label className="text-sm">Modality Expertise {starInput(modalityExpertise, setModalityExpertise)}</label>
@@ -51,13 +51,13 @@ export default function ReviewForm({ clinicianId, onSubmitted }) {
         <label className="text-sm">Cultural Competence {starInput(culturalCompetence, setCulturalCompetence)}</label>
       </div>
       <div className="mt-2">
-        <textarea value={reviewText} onChange={(e) => setReviewText(e.target.value)} rows={4} className="w-full border rounded p-2" placeholder="Share your experience..." />
+        <textarea value={reviewText} onChange={(e) => setReviewText(e.target.value)} rows={4} className="w-full border rounded p-2 bg-white" placeholder="Share your experience..." />
       </div>
       <div className="mt-2">
         <label className="text-sm"><input type="checkbox" checked={verified} onChange={(e) => setVerified(e.target.checked)} /> I confirm I've had at least 3 sessions with this clinician</label>
       </div>
       <div className="mt-3">
-        <button className="bg-[#0f444c] text-white px-4 py-2 rounded">Submit Review</button>
+        <button className="bg-[#657F38] text-white px-4 py-2 rounded hover:bg-[#9EAB57] transition-colors">Submit Review</button>
       </div>
     </form>
   );

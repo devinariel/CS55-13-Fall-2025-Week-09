@@ -60,10 +60,10 @@ export default function Header({ initialUser }) {
   };
 
   return (
-    <header>
+    <header className="bg-[#212C1B] text-[#FCE0C0]">
       <Link href="/" className="logo">
-        <img src="/next.svg" alt="The Therapy Compass" />
-        The Therapy Compass
+        <img src="/logo.svg" alt="The Therapy Compass" className="h-8 w-8" />
+        <span className="font-semibold">The Therapy Compass</span>
       </Link>
       {user ? (
         <>
@@ -72,7 +72,7 @@ export default function Header({ initialUser }) {
               <img
                 className="profileImage"
                 src={user.photoURL || "/profile.svg"}
-                alt={user.email}
+                alt={user.displayName || "User"}
               />
               {user.displayName}
             </p>
