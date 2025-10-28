@@ -55,19 +55,18 @@ export async function getAuthenticatedAppForUser() {
 
   const authIdToken = cookies().get("__session")?.value;
 
-  // Reuse an existing initialized app if available, otherwise initialize
-  const existingApp = getApps().at(0);
-  const appName = `server-${Date.now()}`;
-  console.log(`Initializing Firebase app: ${existingApp ? 'using existing' : 'creating new'}`);
-  // Initialize with the constructed config
-  const firebaseApp = existingApp ?? initializeApp(config, appName);
+  // Use the improved function to get the app instance
+  const firebaseApp = getServerFirebaseApp();
 
   console.log("Initializing server app with auth token...");
-  const firebaseServerApp = initializeServerApp(config, { // Pass config here too
-    authIdToken,
-  });
-
-
+  // Use a unique app name for the server-side instance to avoid conflicts
+  const appName = `server-auth-${Date.now()}`;
+  const firebaseServerApp = initializeServerApp(
+    config,
+    { authIdToken },
+    appName
+  );
+  
   const auth = getAuth(firebaseServerApp);
   console.log("Waiting for auth state...");
   await auth.authStateReady();
@@ -77,14 +76,17 @@ export async function getAuthenticatedAppForUser() {
 }
 
 // Optional: Function to get just the server app instance if needed separately
-export function getServerFirebaseApp() {
-   console.log("getServerFirebaseApp called.");
-   const config = buildServerConfigFromEnv(); // Use the function that reads individual vars
-   if (!config) {
-     throw new Error("Server config not available (Check server logs)");
-   }
-   const existingApp = getApps().at(0);
-   const appName = `server-app-${Date.now()}`;
-   return existingApp ?? initializeApp(config, appName);
-}
+export function getServerFirebaseApp() {  
+  if (getApps().length) {
+    console.log("getServerFirebaseApp: Using existing app.");
+    return getApps()[0];
+  }
 
+  console.log("getServerFirebaseApp: Initializing new app.");
+  const config = buildServerConfigFromEnv();
+  if (!config) {
+    throw new Error("Server config not available (Check server logs)");
+  }
+
+  return initializeApp(config);
+}
