@@ -13,6 +13,7 @@ import {
 } from 'firebase/firestore';
 
 import { db } from './clientApp';
+import { randomData } from '../randomData';
 
 export async function getClinicians(firestore = db, filters = {}) {
   const q = query(collection(firestore, 'clinicians'), orderBy('name'));
@@ -53,4 +54,32 @@ export async function submitReview(firestore = db, clinicianId, review) {
     tx.update(clinicianRef, { avgStyleMatch, avgCulturalComp });
   });
 }
+
+export async function addFakeData() {
+  const cliniciansCol = collection(db, 'clinicians');
+  const reviewsCol = collection(db, 'reviews');
+
+  // Clear existing data
+  const existingClinicians = await getDocs(query(cliniciansCol));
+  existingClinicians.forEach(doc => deleteDoc(doc.ref));
+  const existingReviews = await getDocs(query(reviewsCol));
+  existingReviews.forEach(doc => deleteDoc(doc.ref));
+
+  // Add new data
+  for (const name of randomData.clinicianNames) {
+    const clinician = {
+      name: name,
+      city: randomData.clinicianCities[Math.floor(Math.random() * randomData.clinicianCities.length)],
+      specialization: randomData.clinicianSpecialties[Math.floor(Math.random() * randomData.clinicianSpecialties.length)],
+      profilePicture: `https://storage.googleapis.com/firestorequickstarts.appspot.com/food_${Math.floor(Math.random() * 22) + 1}.png`,
+      avgStyleMatch: (Math.random() * 4 + 1).toFixed(1),
+      avgCulturalComp: (Math.random() * 4 + 1).toFixed(1),
+      numRatings: Math.floor(Math.random() * 50),
+    };
+    await addDoc(cliniciansCol, clinician);
+  }
+
+  console.log('Sample data added to Firestore.');
+}
+
 // end of file

@@ -10,8 +10,8 @@ import {
   signOut,
   onIdTokenChanged,
 } from "../lib/firebase/auth.js";
-// Import helper to add fake data into Firestore
-import { addFakeCliniciansAndReviews } from "../lib/firebase/firestore.js";
+// Import helper to add fake data for Therapy Compass
+import { addFakeData } from "../lib/firebase/therapyFirestore.js";
 // Import cookie helpers to set and delete cookies on the client
 import { setCookie, deleteCookie } from "cookies-next";
 
@@ -82,7 +82,11 @@ export default function Header({ initialUser }) {
               <ul>
                 <li>{user.displayName}</li>
 
-                {/* Sample data loader removed for safety; use public/data/clinicians/mockClinicians.json to seed Firestore via admin script during development */}
+                <li>
+                  <a href="#" onClick={() => addFakeData()}>
+                    Add Sample Clinicians
+                  </a>
+                </li>
 
                 <li>
                   <a href="#" onClick={handleSignOut}>
