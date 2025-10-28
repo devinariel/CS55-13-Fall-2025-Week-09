@@ -1,6 +1,7 @@
 // The filters shown on the clinician listings page
 
 import Tag from "@/src/components/Tag.jsx";
+import { randomData } from "../lib/randomData.js";
 
 function FilterSelect({ label, options, value, onChange, name, icon }) {
   return (
@@ -8,7 +9,7 @@ function FilterSelect({ label, options, value, onChange, name, icon }) {
       <img src={icon} alt={label} />
       <label>
         {label}
-        <select value={value} onChange={onChange} name={name}>
+        <select value={value} onChange={onChange} name={name} className="bg-white border rounded px-2 py-1 ml-2">
           {options.map((option, index) => (
             <option value={option} key={index}>
               {option === "" ? "All" : option}
@@ -33,13 +34,13 @@ export default function Filters({ filters, setFilters }) {
   };
 
   return (
-    <section className="filter">
-      <details className="filter-menu">
+    <section className="filter bg-white p-4 rounded-lg shadow">
+      <details className="filter-menu ">
         <summary>
           <img src="/filter.svg" alt="filter" />
           <div>
-            <p>Clinicians</p>
-            <p>Sorted by {filters.sort || "Rating"}</p>
+            <p className="font-semibold text-[#212C1B]">Clinicians</p>
+            <p className="text-sm text-[#657F38]">Sorted by {filters.sort || "Rating"}</p>
           </div>
         </summary>
 
@@ -51,45 +52,17 @@ export default function Filters({ filters, setFilters }) {
           }}
         >
           <FilterSelect
-            label="Category"
-            options={[
-              "",
-              "Italian",
-              "Chinese",
-              "Japanese",
-              "Mexican",
-              "Indian",
-              "Mediterranean",
-              "Caribbean",
-              "Cajun",
-              "German",
-              "Russian",
-              "Cuban",
-              "Organic",
-              "Tapas",
-            ]}
-            value={filters.category}
-            onChange={(event) => handleSelectionChange(event, "category")}
-            name="category"
-            icon="/food.svg"
+            label="Specialization"
+            options={["", ...randomData.clinicianSpecialties]}
+            value={filters.specialization}
+            onChange={(event) => handleSelectionChange(event, "specialization")}
+            name="specialization"
+            icon="/specialty.svg"
           />
 
           <FilterSelect
             label="City"
-            options={[
-              "",
-              "New York",
-              "Los Angeles",
-              "London",
-              "Paris",
-              "Tokyo",
-              "Mumbai",
-              "Dubai",
-              "Amsterdam",
-              "Seoul",
-              "Singapore",
-              "Istanbul",
-            ]}
+            options={["", ...randomData.clinicianCities]}
             value={filters.city}
             onChange={(event) => handleSelectionChange(event, "city")}
             name="city"
@@ -97,33 +70,23 @@ export default function Filters({ filters, setFilters }) {
           />
 
           <FilterSelect
-            label="Price"
-            options={["", "$", "$$", "$$$", "$$$$"]}
-            value={filters.price}
-            onChange={(event) => handleSelectionChange(event, "price")}
-            name="price"
-            icon="/price.svg"
-          />
-
-          <FilterSelect
             label="Sort"
-            options={["Rating", "Review"]}
+            options={["Rating", "Reviews"]}
             value={filters.sort}
             onChange={(event) => handleSelectionChange(event, "sort")}
             name="sort"
             icon="/sortBy.svg"
           />
 
-          <footer>
+          <footer className="mt-4">
             <menu>
               <button
-                className="button--cancel"
+                className="button--cancel text-sm text-[#657F38]"
                 type="reset"
                 onClick={() => {
                   setFilters({
                     city: "",
-                    category: "",
-                    price: "",
+                    specialization: "",
                     sort: "",
                   });
                 }}
@@ -131,7 +94,7 @@ export default function Filters({ filters, setFilters }) {
                 Reset
               </button>
               <button type="submit" className="button--confirm">
-                Submit
+                Apply Filters
               </button>
             </menu>
           </footer>
@@ -139,7 +102,7 @@ export default function Filters({ filters, setFilters }) {
       </details>
 
       <div className="tags">
-        {Object.entries(filters).map(([type, value]) => {
+        {Object.entries(filters).map(([type, value]) => { 
           // The main filter bar already specifies what
           // sorting is being used. So skip showing the
           // sorting as a 'tag'
