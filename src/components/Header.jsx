@@ -92,13 +92,23 @@ export default function Header({ initialUser }) {
                     href="#" 
                     onClick={async (e) => {
                       e.preventDefault();
+                      const button = e.target;
+                      const originalText = button.textContent || button.innerText;
+                      button.textContent = 'Adding clinicians...';
+                      button.style.pointerEvents = 'none';
+                      
                       try {
-                        await addFakeData();
-                        alert('Sample clinicians added successfully! The page will reload.');
+                        console.log('Starting addFakeData...');
+                        const result = await addFakeData();
+                        console.log('addFakeData result:', result);
+                        alert(`Successfully added ${result.count || 21} clinicians! The page will reload.`);
                         window.location.reload();
                       } catch (error) {
                         console.error('Error adding sample data:', error);
-                        alert('Error adding sample data. Check the console for details.');
+                        console.error('Full error object:', JSON.stringify(error, null, 2));
+                        alert(`Error adding sample data: ${error.message || error.code || 'Unknown error'}. Check the browser console (F12) for more details.`);
+                        button.textContent = originalText;
+                        button.style.pointerEvents = 'auto';
                       }
                     }}
                   >

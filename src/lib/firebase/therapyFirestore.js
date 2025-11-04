@@ -16,6 +16,7 @@ import {
 } from 'firebase/firestore';
 
 import { db } from './clientApp';
+import { auth } from './clientApp';
 import { randomData } from '../randomData';
 
 export async function getClinicians(firestore = db, filters = {}) {
@@ -164,65 +165,109 @@ function getDiverseProfileImage(index, name) {
 }
 
 export async function addFakeData() {
-  const cliniciansCol = collection(db, 'clinicians');
-  const reviewsCol = collection(db, 'reviews');
+  try {
+    const cliniciansCol = collection(db, 'clinicians');
+    const reviewsCol = collection(db, 'reviews');
 
-  // Clear existing data
-  const existingClinicians = await getDocs(query(cliniciansCol));
-  existingClinicians.forEach(doc => deleteDoc(doc.ref));
-  const existingReviews = await getDocs(query(reviewsCol));
-  existingReviews.forEach(doc => deleteDoc(doc.ref));
+    console.log('Starting to add fake data...');
 
-  // Generate 21 clinicians (all names from the list)
-  const namesToUse = randomData.clinicianNames.slice(0, 21);
-  
-  // Ensure varied modalities distribution
-  const modalities = [...randomData.clinicianModalities];
-  
-  for (let i = 0; i < namesToUse.length; i++) {
-    const name = namesToUse[i];
-    
-    // Distribute modalities more evenly
-    const modalityIndex = i % modalities.length;
-    const modality = modalities[modalityIndex];
-    
-    // Rotate through modalities to ensure variety
-    if (i > 0 && i % modalities.length === 0) {
-      // Shuffle modalities array for next round
-      modalities.sort(() => Math.random() - 0.5);
+    // Clear existing data with error handling
+    try {
+      const existingClinicians = await getDocs(query(cliniciansCol));
+      console.log(`Found ${existingClinicians.size} existing clinicians to delete`);
+      const deletePromises = existingClinicians.docs.map(doc => deleteDoc(doc.ref));
+      await Promise.all(deletePromises);
+      console.log('Deleted existing clinicians');
+    } catch (deleteError) {
+      console.warn('Error deleting existing clinicians (continuing anyway):', deleteError);
+      // Continue even if deletion fails
     }
-    
-    const clinician = {
-      name: name,
-      city: randomData.clinicianCities[Math.floor(Math.random() * randomData.clinicianCities.length)],
-      specialization: randomData.clinicianSpecialties[Math.floor(Math.random() * randomData.clinicianSpecialties.length)],
-      modality: modality,
-      profilePicture: getDiverseProfileImage(i, name),
-      photo: getDiverseProfileImage(i, name),
-      avgStyleMatch: (Math.random() * 4 + 1).toFixed(1),
-      avgCulturalComp: (Math.random() * 4 + 1).toFixed(1),
-      numRatings: Math.floor(Math.random() * 50),
-    };
-    const clinicianDoc = await addDoc(cliniciansCol, clinician);
-    
-    // Add some fake reviews
-    const numReviews = Math.floor(Math.random() * 5) + 1; // At least 1 review
-    for (let j = 0; j < numReviews; j++) {
-      const review = randomData.clinicianReviews[Math.floor(Math.random() * randomData.clinicianReviews.length)];
-      await addDoc(reviewsCol, {
-        clinicianId: clinicianDoc.id,
-        userId: `user_${Math.floor(Math.random() * 1000)}`,
-        reviewText: review.text,
-        styleMatch: review.rating,
-        modalityExpertise: review.rating,
-        accessibility: review.rating,
-        culturalCompetence: review.rating,
-        createdAt: Timestamp.fromDate(new Date()),
-      });
+
+    try {
+      const existingReviews = await getDocs(query(reviewsCol));
+      console.log(`Found ${existingReviews.size} existing reviews to delete`);
+      const deletePromises = existingReviews.docs.map(doc => deleteDoc(doc.ref));
+      await Promise.all(deletePromises);
+      console.log('Deleted existing reviews');
+    } catch (deleteError) {
+      console.warn('Error deleting existing reviews (continuing anyway):', deleteError);
+      // Continue even if deletion fails
     }
+
+    // Generate 21 clinicians (all names from the list)
+    const namesToUse = randomData.clinicianNames.slice(0, 21);
+    console.log(`Generating ${namesToUse.length} clinicians...`);
+    
+    // Ensure varied modalities distribution
+    const modalities = [...randomData.clinicianModalities];
+    
+    for (let i = 0; i < namesToUse.length; i++) {
+      const name = namesToUse[i];
+      
+      // Distribute modalities more evenly
+      const modalityIndex = i % modalities.length;
+      const modality = modalities[modalityIndex];
+      
+      // Rotate through modalities to ensure variety
+      if (i > 0 && i % modalities.length === 0) {
+        // Shuffle modalities array for next round
+        modalities.sort(() => Math.random() - 0.5);
+      }
+      
+      const clinician = {
+        name: name,
+        city: randomData.clinicianCities[Math.floor(Math.random() * randomData.clinicianCities.length)],
+        specialization: randomData.clinicianSpecialties[Math.floor(Math.random() * randomData.clinicianSpecialties.length)],
+        modality: modality,
+        profilePicture: getDiverseProfileImage(i, name),
+        photo: getDiverseProfileImage(i, name),
+        avgStyleMatch: parseFloat((Math.random() * 4 + 1).toFixed(1)),
+        avgCulturalComp: parseFloat((Math.random() * 4 + 1).toFixed(1)),
+        numRatings: Math.floor(Math.random() * 50),
+        sumRating: 0, // Will be calculated when reviews are added
+        avgRating: 0, // Will be calculated when reviews are added
+      };
+      
+      console.log(`Adding clinician ${i + 1}/${namesToUse.length}: ${name}`);
+      const clinicianDoc = await addDoc(cliniciansCol, clinician);
+      
+      // Add some fake reviews
+      // Use the current authenticated user's ID for reviews (required by Firestore rules)
+      const currentUser = auth?.currentUser;
+      const reviewUserId = currentUser?.uid || 'system';
+      
+      const numReviews = Math.floor(Math.random() * 5) + 1; // At least 1 review
+      for (let j = 0; j < numReviews; j++) {
+        const review = randomData.clinicianReviews[Math.floor(Math.random() * randomData.clinicianReviews.length)];
+        try {
+          await addDoc(reviewsCol, {
+            clinicianId: clinicianDoc.id,
+            userId: reviewUserId,
+            reviewText: review.text,
+            styleMatch: review.rating,
+            modalityExpertise: review.rating,
+            accessibility: review.rating,
+            culturalCompetence: review.rating,
+            createdAt: Timestamp.fromDate(new Date()),
+          });
+        } catch (reviewError) {
+          console.warn(`Failed to add review ${j + 1} for ${name}:`, reviewError);
+          // Continue with other reviews even if one fails
+        }
+      }
+    }
+
+    console.log(`Successfully added ${namesToUse.length} clinicians with diverse profile images to Firestore.`);
+    return { success: true, count: namesToUse.length };
+  } catch (error) {
+    console.error('Error in addFakeData:', error);
+    console.error('Error details:', {
+      message: error.message,
+      code: error.code,
+      stack: error.stack
+    });
+    throw error;
   }
-
-  console.log(`Added ${namesToUse.length} clinicians with diverse profile images to Firestore.`);
 }
 
 // end of file
