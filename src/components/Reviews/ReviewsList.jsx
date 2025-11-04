@@ -1,7 +1,7 @@
 // This component handles the list of reviews for a given clinician
 
 import React from "react";
-import { getReviewsByClinicianId } from "@/src/lib/firebase/firestore.js";
+import { getReviewsByClinicianId } from "@/src/lib/firebase/therapyFirestore.js";
 import ReviewsListClient from "@/src/components/Reviews/ReviewsListClient";
 import { ReviewSkeleton } from "@/src/components/Reviews/Review";
 import { getFirestore } from "firebase/firestore";

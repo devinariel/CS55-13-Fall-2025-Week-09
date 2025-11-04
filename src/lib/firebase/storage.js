@@ -4,15 +4,15 @@ import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 // import the initialized storage instance from the client app
 import { storage } from "@/src/lib/firebase/clientApp";
 
-// import function to update the restaurant document with the image URL
-import { updateClinicianImageReference } from "@/src/lib/firebase/firestore";
+// import function to update the clinician document with the image URL
+import { updateClinicianImageReference } from "@/src/lib/firebase/therapyFirestore";
 
 // Replace the two functions below
-// upload an image for a restaurant and update the restaurant doc
+// upload an image for a clinician and update the clinician doc
 export async function updateClinicianImage(clinicianId, image) {
   // wrap in try/catch to handle errors
   try {
-    // verify a restaurant ID was provided
+    // verify a clinician ID was provided
     if (!clinicianId) {
       throw new Error("No clinician ID has been provided.");
     }

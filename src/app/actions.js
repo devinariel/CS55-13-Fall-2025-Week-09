@@ -1,6 +1,6 @@
 "use server";
 
-import { addReviewToClinician } from "@/src/lib/firebase/firestore.js";
+import { addReviewToClinician } from "@/src/lib/firebase/therapyFirestore.js";
 import { getAuthenticatedAppForUser } from "@/src/lib/firebase/serverApp.js";
 import { getFirestore } from "firebase/firestore";
 
@@ -8,8 +8,8 @@ import { getFirestore } from "firebase/firestore";
 // use with caution.
 // https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions
 export async function handleReviewFormSubmission(data) {
-        const { app } = await getAuthenticatedAppForUser();
-        const db = getFirestore(app);
+        const { firebaseServerApp } = await getAuthenticatedAppForUser();
+        const db = getFirestore(firebaseServerApp);
 
         await addReviewToClinician(db, data.get("clinicianId"), {
                 text: data.get("text"),

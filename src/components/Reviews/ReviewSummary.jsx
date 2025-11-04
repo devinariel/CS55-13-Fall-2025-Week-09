@@ -3,7 +3,7 @@ import { gemini20Flash, googleAI } from "@genkit-ai/googleai";
 // import the genkit helper to create an AI client
 import { genkit } from "genkit";
 // import helper to fetch reviews from Firestore
-import { getReviewsByClinicianId } from "@/src/lib/firebase/firestore.js";
+import { getReviewsByClinicianId } from "@/src/lib/firebase/therapyFirestore.js";
 // import server helper to get an authenticated Firebase app
 import { getAuthenticatedAppForUser } from "@/src/lib/firebase/serverApp";
 // import getFirestore to create a Firestore instance from the app

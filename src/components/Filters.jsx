@@ -61,6 +61,15 @@ export default function Filters({ filters, setFilters }) {
           />
 
           <FilterSelect
+            label="Modality"
+            options={["", ...randomData.clinicianModalities]}
+            value={filters.modality}
+            onChange={(event) => handleSelectionChange(event, "modality")}
+            name="modality"
+            icon="/specialty.svg"
+          />
+
+          <FilterSelect
             label="City"
             options={["", ...randomData.clinicianCities]}
             value={filters.city}
@@ -87,6 +96,7 @@ export default function Filters({ filters, setFilters }) {
                   setFilters({
                     city: "",
                     specialization: "",
+                    modality: "",
                     sort: "",
                   });
                 }}

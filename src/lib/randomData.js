@@ -47,6 +47,15 @@ export const randomData = {
     "Mental Health Counseling",
     "Social Work",
   ],
+  clinicianModalities: [
+    "Individual Therapy",
+    "Couples Therapy",
+    "Family Therapy",
+    "Group Therapy",
+    "Online Therapy",
+    "In-Person Therapy",
+    "Hybrid Therapy",
+  ],
   clinicianReviews: [
     { text: "Dr. Johnson was incredibly helpful and understanding. Great experience!", rating: 5 },
     { text: "Very professional and knowledgeable. Made me feel comfortable.", rating: 5 },

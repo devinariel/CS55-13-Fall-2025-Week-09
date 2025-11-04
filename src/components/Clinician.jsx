@@ -3,7 +3,7 @@
 // Removed duplicate React import, combined useState/useEffect
 import React, { useState, useEffect, Suspense } from "react";
 import dynamic from "next/dynamic";
-import { getClinicianSnapshotById } from "../lib/firebase/firestore.js";
+import { getClinicianSnapshotById } from "../lib/firebase/therapyFirestore.js";
 import { useUser } from "../lib/getUser.js";
 import ClinicianDetails from "./ClinicianDetails.jsx"; // Assuming this path is correct relative to Clinician.jsx
 import { updateClinicianImage } from "../lib/firebase/storage.js";

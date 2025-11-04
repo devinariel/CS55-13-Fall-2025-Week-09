@@ -5,45 +5,31 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "category",
+          "fieldPath": "specialization",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "avgRating",
+          "fieldPath": "avgStyleMatch",
           "order": "DESCENDING"
         }
       ]
     },
     {
-      "collectionGroup": "restaurants",
+      "collectionGroup": "clinicians",
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "category",
+          "fieldPath": "modality",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "numRatings",
+          "fieldPath": "avgStyleMatch",
           "order": "DESCENDING"
         }
       ]
     },
     {
-      "collectionGroup": "restaurants",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "category",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "price",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "restaurants",
+      "collectionGroup": "clinicians",
       "queryScope": "COLLECTION",
       "fields": [
         {
@@ -51,63 +37,21 @@
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "avgRating",
+          "fieldPath": "avgStyleMatch",
           "order": "DESCENDING"
         }
       ]
     },
     {
-      "collectionGroup": "restaurants",
+      "collectionGroup": "reviews",
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "city",
+          "fieldPath": "clinicianId",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "numRatings",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "restaurants",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "city",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "price",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "restaurants",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "price",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "avgRating",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "restaurants",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "price",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "numRatings",
+          "fieldPath": "createdAt",
           "order": "DESCENDING"
         }
       ]

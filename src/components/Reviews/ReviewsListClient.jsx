@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { getReviewsSnapshotByClinicianId } from "@/src/lib/firebase/firestore.js";
+import { getReviewsSnapshotByClinicianId } from "@/src/lib/firebase/therapyFirestore.js";
 import { Review } from "@/src/components/Reviews/Review";
 
 export default function ReviewsListClient({ initialReviews, clinicianId, userId }) {

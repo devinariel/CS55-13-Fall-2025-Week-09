@@ -45,7 +45,7 @@ export async function generateFakeCliniciansAndReviews() {
       : 0;
 
     const clinicianData = {
-      specialty:
+      specialization:
         randomData.clinicianSpecialties[
           randomNumberBetween(0, randomData.clinicianSpecialties.length - 1)
         ],
@@ -53,15 +53,17 @@ export async function generateFakeCliniciansAndReviews() {
         randomNumberBetween(0, randomData.clinicianNames.length - 1)
       ],
       avgRating,
-      location: randomData.clinicianCities[
+      city: randomData.clinicianCities[
         randomNumberBetween(0, randomData.clinicianCities.length - 1)
+      ],
+      modality: randomData.clinicianModalities[
+        randomNumberBetween(0, randomData.clinicianModalities.length - 1)
       ],
       numRatings: ratingsData.length,
       sumRating: ratingsData.reduce(
         (accumulator, currentValue) => accumulator + currentValue.rating,
         0
       ),
-      price: randomNumberBetween(1, 4),
       photo: `https://storage.googleapis.com/firestorequickstarts.appspot.com/food_${randomNumberBetween(
         1,
         22

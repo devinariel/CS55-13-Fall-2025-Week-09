@@ -12,6 +12,7 @@ export default function ClinicianListings() {
   const [filters, setFilters] = useState({
     city: "",
     specialization: "",
+    modality: "",
     sort: "Rating",
   });
 
@@ -35,6 +36,12 @@ export default function ClinicianListings() {
     if (filters.specialization) {
       filtered = filtered.filter(
         (clinician) => clinician.specialization === filters.specialization
+      );
+    }
+
+    if (filters.modality) {
+      filtered = filtered.filter(
+        (clinician) => clinician.modality === filters.modality
       );
     }
 

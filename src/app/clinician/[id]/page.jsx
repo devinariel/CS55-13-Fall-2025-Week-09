@@ -1,6 +1,6 @@
 import ClinicianDetailComponent from "../../../components/Clinician.jsx";
 import { Suspense } from "react";
-import { getClinicianById } from "../../../lib/firebase/firestore.js";
+import { getClinicianById } from "../../../lib/firebase/therapyFirestore.js";
 import {
   getAuthenticatedAppForUser,
   getAuthenticatedAppForUser as getUser, // Keep alias if used elsewhere, otherwise redundant
