@@ -21,7 +21,7 @@ export default async function RootLayout({ children }) {
   
   return (
     <html lang="en">
-      <body className="bg-[#FCE0C0] text-[#212C1B]">
+      <body className="bg-[#F1EAD8] text-[#68604D]">
         <Header initialUser={currentUser?.toJSON()} />
         <main>{children}</main>
       </body>

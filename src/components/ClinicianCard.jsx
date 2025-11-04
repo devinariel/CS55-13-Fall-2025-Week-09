@@ -18,12 +18,12 @@ export default function ClinicianCard({ clinician, onSelect }) {
           }}
         />
         <div>
-          <h3 className="text-[#212C1B] font-semibold">{clinician.name || 'Unknown'}</h3>
-          <p className="text-[#657F38] text-sm">{clinician.specialization || 'No specialization'}</p>
+          <h3 className="text-[#68604D] font-semibold">{clinician.name || 'Unknown'}</h3>
+          <p className="text-[#8A8E75] text-sm">{clinician.specialization || 'No specialization'}</p>
         </div>
       </div>
       <div className="mt-3">
-        <p className="text-sm text-[#212C1B]">Avg Fit: <strong className="text-[#D57640]">{Number(clinician.avgStyleMatch||0).toFixed(1)}</strong></p>
+        <p className="text-sm text-[#68604D]">Avg Fit: <strong className="text-[#BEC5A4]">{Number(clinician.avgStyleMatch||0).toFixed(1)}</strong></p>
       </div>
     </div>
   );

@@ -79,7 +79,7 @@ export default function ClinicianListings() {
   if (loading) {
     return (
       <div className="p-4">
-        <p className="text-[#212C1B]">Loading clinicians...</p>
+        <p className="text-[#68604D]">Loading clinicians...</p>
       </div>
     );
   }
@@ -88,7 +88,7 @@ export default function ClinicianListings() {
     return (
       <div className="p-4">
         <p className="text-red-600">Error: {error}</p>
-        <p className="text-sm text-[#212C1B] mt-2">
+        <p className="text-sm text-[#68604D] mt-2">
           Make sure you're signed in and have permission to read clinicians.
         </p>
       </div>
@@ -100,7 +100,7 @@ export default function ClinicianListings() {
       <>
         <Filters filters={filters} setFilters={setFilters} />
         <div className="p-4 mt-4">
-          <p className="text-[#212C1B]">
+          <p className="text-[#68604D]">
             {clinicians.length === 0 
               ? "No clinicians found. Sign in and click 'Add Sample Clinicians' in the header to add sample data."
               : "No clinicians match your filters. Try adjusting your search criteria."}

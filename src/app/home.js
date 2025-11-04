@@ -12,7 +12,7 @@ export default async function Home(props) {
 
   return (
     <main className="p-4 md:p-8">
-      <h1 className="text-2xl font-bold text-[#161d23] mb-4">The Therapy Compass</h1>
+      <h1 className="text-2xl font-bold text-[#68604D] mb-4">The Therapy Compass</h1>
       <ClinicianList initialClinicians={clinicians} />
     </main>
   );

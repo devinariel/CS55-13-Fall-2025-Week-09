@@ -39,8 +39,8 @@ export default function Filters({ filters, setFilters }) {
         <summary>
           <img src="/filter.svg" alt="filter" />
           <div>
-            <p className="font-semibold text-[#212C1B]">Clinicians</p>
-            <p className="text-sm text-[#657F38]">Sorted by {filters.sort || "Rating"}</p>
+            <p className="font-semibold text-[#68604D]">Clinicians</p>
+            <p className="text-sm text-[#8A8E75]">Sorted by {filters.sort || "Rating"}</p>
           </div>
         </summary>
 
@@ -90,7 +90,7 @@ export default function Filters({ filters, setFilters }) {
           <footer className="mt-4">
             <menu>
               <button
-                className="button--cancel text-sm text-[#657F38]"
+                className="button--cancel text-sm text-[#8A8E75]"
                 type="reset"
                 onClick={() => {
                   setFilters({

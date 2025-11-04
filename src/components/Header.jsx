@@ -65,9 +65,9 @@ export default function Header({ initialUser }) {
   };
 
   return (
-    <header className="bg-[#212C1B] text-[#FCE0C0]">
+    <header className="bg-[#68604D] text-[#F1EAD8]">
       <Link href="/" className="logo">
-        <img src="/therapycompass_logo.png" alt="The Therapy Compass" className="h-8 w-8" />
+        <img src="/therapycompass_logo.png" alt="The Therapy Compass" className="h-16 w-16" />
         <span className="font-semibold">The Therapy Compass</span>
       </Link>
       {user ? (

@@ -26,7 +26,7 @@ export default function ClinicianDetail({ clinician, onBack }) {
   return (
     <div className="relative">
       <SafetyBanner />
-      <button onClick={onBack} className="text-sm text-[#657F38] font-semibold hover:underline">← Back to list</button>
+      <button onClick={onBack} className="text-sm text-[#8A8E75] font-semibold hover:underline">← Back to list</button>
       <div className="mt-4 bg-white p-4 rounded-lg shadow">
         <div className="flex items-center gap-4">
           <img 
@@ -39,26 +39,26 @@ export default function ClinicianDetail({ clinician, onBack }) {
             }}
           />
           <div>
-            <h2 className="text-xl font-bold text-[#212C1B]">{clinician.name}</h2>
-            <p className="text-[#657F38]">{clinician.specialization} · {clinician.city}</p>
-            <p className="text-sm text-[#212C1B] mt-2">Avg Fit: <strong className="text-[#D57640]">{Number(clinician.avgStyleMatch||0).toFixed(1)}</strong></p>
+            <h2 className="text-xl font-bold text-[#68604D]">{clinician.name}</h2>
+            <p className="text-[#8A8E75]">{clinician.specialization} · {clinician.city}</p>
+            <p className="text-sm text-[#68604D] mt-2">Avg Fit: <strong className="text-[#BEC5A4]">{Number(clinician.avgStyleMatch||0).toFixed(1)}</strong></p>
           </div>
         </div>
 
         <div className="mt-4">
-          <h3 className="font-semibold text-[#657F38]">AI-Generated Thematic Summary</h3>
-          {loadingSummary ? <p className="text-sm text-gray-600">✨ Generating summary with Gemini...</p> : <p className="text-sm text-[#212C1B] italic">{summary}</p>}
+          <h3 className="font-semibold text-[#8A8E75]">AI-Generated Thematic Summary</h3>
+          {loadingSummary ? <p className="text-sm text-[#8A8E75]">✨ Generating summary with Gemini...</p> : <p className="text-sm text-[#68604D] italic">{summary}</p>}
         </div>
       </div>
 
       <div className="mt-4">
-        <h3 className="text-lg font-semibold text-[#657F38]">Reviews</h3>
-        {reviews.length === 0 && <p className="text-sm text-[#212C1B]">No reviews yet.</p>}
+        <h3 className="text-lg font-semibold text-[#8A8E75]">Reviews</h3>
+        {reviews.length === 0 && <p className="text-sm text-[#68604D]">No reviews yet.</p>}
         <ul className="space-y-3 mt-3">
           {reviews.map((r) => (
             <li key={r.id} className="bg-white p-3 rounded-lg shadow-sm">
-              <div className="text-sm text-[#212C1B]">{r.reviewText}</div>
-              <div className="text-xs text-[#657F38] mt-2">Style Fit: <span className="font-bold text-[#D57640]">{r.styleMatch}</span> · Cultural Competence: <span className="font-bold text-[#D57640]">{r.culturalCompetence}</span></div>
+              <div className="text-sm text-[#68604D]">{r.reviewText}</div>
+              <div className="text-xs text-[#8A8E75] mt-2">Style Fit: <span className="font-bold text-[#BEC5A4]">{r.styleMatch}</span> · Cultural Competence: <span className="font-bold text-[#BEC5A4]">{r.culturalCompetence}</span></div>
             </li>
           ))}
         </ul>

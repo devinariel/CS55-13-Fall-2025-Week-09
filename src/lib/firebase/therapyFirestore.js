@@ -144,6 +144,25 @@ export async function updateClinicianImageReference(clinicianId, publicImageUrl)
   await updateDoc(clinicianRef, { photo: publicImageUrl });
 }
 
+// Generate diverse profile image URL using multiple services for variety
+function getDiverseProfileImage(index, name) {
+  // Use Pravatar for diverse professional headshots (1-70 available)
+  // These are real-looking diverse portraits that work well for professional profiles
+  const pravatarIndex = (index % 70) + 1;
+  
+  // Ensure we get different images by using the index
+  // Pravatar provides diverse professional-looking photos
+  return `https://i.pravatar.cc/300?img=${pravatarIndex}`;
+  
+  // Alternative options if Pravatar doesn't work well:
+  // Option 1: Dicebear with professional style
+  // const seed = name.replace(/[^a-zA-Z0-9]/g, '').toLowerCase() + index;
+  // return `https://api.dicebear.com/7.x/personas/svg?seed=${seed}`;
+  
+  // Option 2: RandomUser API (requires different approach)
+  // return `https://randomuser.me/api/portraits/${index % 2 === 0 ? 'men' : 'women'}/${(index % 50) + 1}.jpg`;
+}
+
 export async function addFakeData() {
   const cliniciansCol = collection(db, 'clinicians');
   const reviewsCol = collection(db, 'reviews');
@@ -154,15 +173,32 @@ export async function addFakeData() {
   const existingReviews = await getDocs(query(reviewsCol));
   existingReviews.forEach(doc => deleteDoc(doc.ref));
 
-  // Add new data
-  for (const name of randomData.clinicianNames) {
+  // Generate 21 clinicians (all names from the list)
+  const namesToUse = randomData.clinicianNames.slice(0, 21);
+  
+  // Ensure varied modalities distribution
+  const modalities = [...randomData.clinicianModalities];
+  
+  for (let i = 0; i < namesToUse.length; i++) {
+    const name = namesToUse[i];
+    
+    // Distribute modalities more evenly
+    const modalityIndex = i % modalities.length;
+    const modality = modalities[modalityIndex];
+    
+    // Rotate through modalities to ensure variety
+    if (i > 0 && i % modalities.length === 0) {
+      // Shuffle modalities array for next round
+      modalities.sort(() => Math.random() - 0.5);
+    }
+    
     const clinician = {
       name: name,
       city: randomData.clinicianCities[Math.floor(Math.random() * randomData.clinicianCities.length)],
       specialization: randomData.clinicianSpecialties[Math.floor(Math.random() * randomData.clinicianSpecialties.length)],
-      modality: randomData.clinicianModalities[Math.floor(Math.random() * randomData.clinicianModalities.length)],
-      profilePicture: `https://storage.googleapis.com/firestorequickstarts.appspot.com/food_${Math.floor(Math.random() * 22) + 1}.png`,
-      photo: `https://storage.googleapis.com/firestorequickstarts.appspot.com/food_${Math.floor(Math.random() * 22) + 1}.png`,
+      modality: modality,
+      profilePicture: getDiverseProfileImage(i, name),
+      photo: getDiverseProfileImage(i, name),
       avgStyleMatch: (Math.random() * 4 + 1).toFixed(1),
       avgCulturalComp: (Math.random() * 4 + 1).toFixed(1),
       numRatings: Math.floor(Math.random() * 50),
@@ -170,8 +206,8 @@ export async function addFakeData() {
     const clinicianDoc = await addDoc(cliniciansCol, clinician);
     
     // Add some fake reviews
-    const numReviews = Math.floor(Math.random() * 5);
-    for (let i = 0; i < numReviews; i++) {
+    const numReviews = Math.floor(Math.random() * 5) + 1; // At least 1 review
+    for (let j = 0; j < numReviews; j++) {
       const review = randomData.clinicianReviews[Math.floor(Math.random() * randomData.clinicianReviews.length)];
       await addDoc(reviewsCol, {
         clinicianId: clinicianDoc.id,
@@ -186,7 +222,7 @@ export async function addFakeData() {
     }
   }
 
-  console.log('Sample data added to Firestore.');
+  console.log(`Added ${namesToUse.length} clinicians with diverse profile images to Firestore.`);
 }
 
 // end of file
