@@ -27,9 +27,9 @@ export default function ReviewsListClient({ initialReviews, clinicianId, userId 
             ))}
           </ul>
         ) : (
-          <p>
-      This clinician has not been reviewed yet,{" "}
-      {!userId ? "first login and then" : ""} add your own review!
+          <p className="text-[#68604D]">
+            This clinician has not been reviewed yet,{" "}
+            {!userId ? "first login and then" : ""} add your own review!
           </p>
         )}
       </ul>

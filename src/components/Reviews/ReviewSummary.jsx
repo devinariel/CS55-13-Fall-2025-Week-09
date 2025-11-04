@@ -11,34 +11,53 @@ import { getFirestore } from "firebase/firestore";
 
 // server component: generate a one-sentence summary using Gemini
 export async function GeminiSummary({ clinicianId }) {
-  // get an authenticated Firebase server app for the current user
-  const { firebaseServerApp } = await getAuthenticatedAppForUser();
-  // fetch reviews for the clinician from Firestore
-  const reviews = await getReviewsByClinicianId(
-    // create a Firestore instance from the server app
-    getFirestore(firebaseServerApp),
-    // pass the clinician ID to fetch its reviews
-    clinicianId
-  );
+  try {
+    // get an authenticated Firebase server app for the current user
+    const { firebaseServerApp } = await getAuthenticatedAppForUser();
+    // fetch reviews for the clinician from Firestore
+    const reviews = await getReviewsByClinicianId(
+      // create a Firestore instance from the server app
+      getFirestore(firebaseServerApp),
+      // pass the clinician ID to fetch its reviews
+      clinicianId
+    );
 
-  // use this character to separate reviews in the prompt
-  const reviewSeparator = "@";
-  // build a prompt that lists all review texts separated by reviewSeparator
-  const prompt = `
+    // Filter out reviews with no text and get review texts
+    const reviewTexts = reviews
+      .map((review) => review.text || review.reviewText || '')
+      .filter((text) => text.trim().length > 0);
+
+    // If no reviews with text, return a message
+    if (reviewTexts.length === 0) {
+      return (
+        <div className="clinician__review_summary">
+          <p className="text-[#8A8E75] italic">No reviews yet. Be the first to share your experience!</p>
+        </div>
+      );
+    }
+
+    // use this character to separate reviews in the prompt
+    const reviewSeparator = "@";
+    // build a prompt that lists all review texts separated by reviewSeparator
+    const prompt = `
   Based on the following clinician reviews, 
   where each review is separated by a '${reviewSeparator}' character, 
-  create a one-sentence summary of what people think of the clinician. 
+  create a concise one-sentence summary (max 100 words) of what people think of this mental health clinician. 
+  Focus on common themes, strengths, and overall fit. 
 
-  Here are the reviews: ${reviews.map((review) => review.text).join(reviewSeparator)}
+  Here are the reviews: ${reviewTexts.join(reviewSeparator)}
   `;
 
-  try {
     // ensure the Gemini API key is available in environment
     if (!process.env.GEMINI_API_KEY) {
-      // Make sure GEMINI_API_KEY environment variable is set:
-      // https://firebase.google.com/docs/genkit/get-started
-      throw new Error(
-        'GEMINI_API_KEY not set. Set it with "firebase apphosting:secrets:set GEMINI_API_KEY"'
+      // Fallback to a simple summary if Gemini is not configured
+      return (
+        <div className="clinician__review_summary">
+          <p className="text-[#68604D]">
+            {reviewTexts.length} {reviewTexts.length === 1 ? 'review' : 'reviews'} available. 
+            Gemini API key not configured for AI summaries.
+          </p>
+        </div>
       );
     }
 
@@ -53,14 +72,20 @@ export async function GeminiSummary({ clinicianId }) {
     // return JSX that shows the summary text and a note about Gemini
     return (
       <div className="clinician__review_summary">
-        <p>{text}</p>
-        <p>✨ Summarized with Gemini</p>
+        <p className="text-[#68604D]">{text}</p>
+        <p className="text-sm text-[#8A8E75] mt-2">✨ Summarized with Gemini</p>
       </div>
     );
   } catch (e) {
     // log errors and render an error message
-    console.error(e);
-    return <p>Error summarizing reviews.</p>;
+    console.error('Error generating review summary:', e);
+    return (
+      <div className="clinician__review_summary">
+        <p className="text-[#8A8E75] italic">
+          Unable to generate summary at this time. Please try again later.
+        </p>
+      </div>
+    );
   }
 }
 
@@ -69,7 +94,7 @@ export function GeminiSummarySkeleton() {
   // render placeholder copy while waiting for Gemini
   return (
     <div className="clinician__review_summary">
-      <p>✨ Summarizing reviews with Gemini...</p>
+      <p className="text-[#8A8E75]">✨ Summarizing reviews with Gemini...</p>
     </div>
   );
 }

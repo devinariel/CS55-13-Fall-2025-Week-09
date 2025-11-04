@@ -63,7 +63,7 @@ const ClinicianDetails = ({
           <p>
             {clinician.specialization} | {clinician.city}
           </p>
-          {clinician.modality && <p className="text-sm text-[#8A8E75]">Modality: {clinician.modality}</p>}
+          {clinician.modality && <p className="text-sm" style={{ color: '#F1EAD8' }}>Modality: {clinician.modality}</p>}
           {children}
         </div>
       </div>

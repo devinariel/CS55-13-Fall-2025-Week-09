@@ -44,7 +44,7 @@ export default async function Page(props) {
 
       {/* Reviews Section */}
       <div className="mt-8">
-        <h2 className="text-2xl font-semibold mb-4">Reviews</h2>
+        <h2 className="text-2xl font-semibold mb-4 text-[#68604D]">Reviews</h2>
         <Suspense
           fallback={<ReviewsListSkeleton numReviews={clinician.numRatings} />}
         >

@@ -234,7 +234,8 @@ header {
   min-height: 100vh;
 }
 
-.main__restaurant {
+.main__restaurant,
+.main__clinician {
   background-color: #F1EAD8;
   min-height: 90vh;
 }
@@ -325,10 +326,20 @@ a {
   }
 }
 
-.restaurant__review_summary {
-  max-width: "50vw";
-  height: "75px";
-  padding-top: "10px";
+.restaurant__review_summary,
+.clinician__review_summary {
+  max-width: 50vw;
+  min-height: 75px;
+  padding: 20px;
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+  margin-top: 20px;
+  
+  & p {
+    color: #68604D;
+    line-height: 1.6;
+  }
 }
 
 .img__section {
@@ -348,7 +359,17 @@ a {
   position: absolute;
   bottom: 0;
   padding: 20px;
-  color: white;
+  color: #F1EAD8;
+  z-index: 2;
+
+  & h2 {
+    color: #F1EAD8;
+    font-weight: 700;
+  }
+
+  & p {
+    color: #F1EAD8;
+  }
 
   & span {
     color: inherit;
@@ -377,7 +398,7 @@ a {
 
   & time {
     font-size: 0.8rem;
-    color: darkgrey;
+    color: #8A8E75;
   }
 }
 

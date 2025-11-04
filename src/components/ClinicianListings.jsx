@@ -113,14 +113,16 @@ export default function ClinicianListings() {
   return (
     <>
       <Filters filters={filters} setFilters={setFilters} />
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-        {filteredClinicians.map((clinician) => (
-          <ClinicianCard
-            key={clinician.id}
-            clinician={clinician}
-            onSelect={() => setSelectedClinician(clinician)}
-          />
-        ))}
+      <div className="flex justify-center mt-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-7xl">
+          {filteredClinicians.map((clinician) => (
+            <ClinicianCard
+              key={clinician.id}
+              clinician={clinician}
+              onSelect={() => setSelectedClinician(clinician)}
+            />
+          ))}
+        </div>
       </div>
     </>
   );
