@@ -166,10 +166,16 @@ function getDiverseProfileImage(index, name) {
 
 export async function addFakeData() {
   try {
+    // Check if user is authenticated
+    if (!auth?.currentUser) {
+      throw new Error('You must be signed in to add sample data. Please sign in and try again.');
+    }
+    
+    console.log('Starting to add fake data...');
+    console.log('Current user:', auth.currentUser.uid);
+    
     const cliniciansCol = collection(db, 'clinicians');
     const reviewsCol = collection(db, 'reviews');
-
-    console.log('Starting to add fake data...');
 
     // Clear existing data with error handling
     try {
@@ -233,8 +239,7 @@ export async function addFakeData() {
       
       // Add some fake reviews
       // Use the current authenticated user's ID for reviews (required by Firestore rules)
-      const currentUser = auth?.currentUser;
-      const reviewUserId = currentUser?.uid || 'system';
+      const reviewUserId = auth.currentUser.uid;
       
       const numReviews = Math.floor(Math.random() * 5) + 1; // At least 1 review
       for (let j = 0; j < numReviews; j++) {

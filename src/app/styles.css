@@ -87,7 +87,7 @@ dialog {
   }
 
   &::backdrop {
-    background-color: #f6f7f9;
+    background-color: #D5C7AD;
     opacity: 0.8;
   }
 }
@@ -109,15 +109,19 @@ footer {
   }
 
   & .button--cancel {
-    color: rgb(178, 193, 212);
+    color: #8A8E75;
     background-color: white;
     border-radius: 3px;
   }
 
   & .button--confirm {
-    background-color: rgb(255 111 0);
+    background-color: #8A8E75;
     color: white;
     border-radius: 3px;
+  }
+  
+  & .button--confirm:hover {
+    background-color: #BEC5A4;
   }
 
   & menu {
@@ -129,8 +133,8 @@ footer {
 }
 
 header {
-  background-color: rgb(56 85 116);
-  color: white;
+  background-color: #68604D;
+  color: #F1EAD8;
   display: flex;
   justify-content: space-between;
   padding: 0.8rem;
@@ -147,11 +151,11 @@ header {
   }
   & a {
     text-decoration: none;
-    color: white;
+    color: #F1EAD8;
   }
   .profileImage {
     border-radius: 100%;
-    border-color: white;
+    border-color: #F1EAD8;
     border-width: 2px;
     border-style: solid;
     margin-right: 10px;
@@ -166,7 +170,7 @@ header {
     margin-inline-end: 10px;
   }
 
-  color: white;
+  color: #F1EAD8;
   text-decoration: none;
   font-size: 1.25rem;
   font-weight: 500;
@@ -182,26 +186,26 @@ header {
 .menu ul {
   /* display: block; */
   left: calc(-220px * 0.9);
-  color: rgb(42 72 101);
+  color: #68604D;
   background-color: white;
   box-shadow: 0 0 10px 0 rgb(0 0 0 / 50%);
 
   & li {
     padding: 10px;
-    border-bottom: 1px solid rgb(42 72 101 / 0.25);
+    border-bottom: 1px solid #8A8E75;
   }
 
   & a {
     font-weight: bold;
-    color: unset;
+    color: #68604D;
   }
 
   & li:has(a):hover {
-    background-color: rgb(42 72 101 / 0.05);
+    background-color: #F1EAD8;
   }
 
   & a:visited {
-    color: unset;
+    color: #68604D;
   }
 }
 
@@ -226,18 +230,18 @@ header {
 }
 
 .main__home {
-  background-color: rgb(178 193 212);
+  background-color: #F1EAD8;
   min-height: 100vh;
 }
 
 .main__restaurant {
-  background-color: rgb(229 234 240);
+  background-color: #F1EAD8;
   min-height: 90vh;
 }
 
 article {
   margin: 0 auto;
-  background-color: rgb(229 234 240);
+  background-color: #F1EAD8;
   padding: 20px 40px;
 }
 
@@ -258,7 +262,7 @@ article {
   }
 
   & a {
-    color: black;
+    color: #68604D;
     display: flex;
     flex-direction: column;
     flex: 2 1 100%;
@@ -313,11 +317,11 @@ a {
   & svg {
     width: 2rem;
     height: 2rem;
-    color: rgb(255 202 40);
+    color: #BEC5A4;
   }
 
   & span {
-    color: rgb(156 163 175);
+    color: #8A8E75;
   }
 }
 
@@ -352,15 +356,15 @@ a {
 }
 
 .details__container {
-  --tw-gradient-from: #c60094 var(--tw-gradient-from-position);
-  --tw-gradient-to: rgb(56 85 116 / 0) var(--tw-gradient-to-position);
+  --tw-gradient-from: #68604D var(--tw-gradient-from-position);
+  --tw-gradient-to: rgba(104, 96, 77, 0) var(--tw-gradient-to-position);
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
   background-image: linear-gradient(to top right, var(--tw-gradient-stops));
   position: absolute;
   right: 0;
   bottom: 0;
   left: 0;
-  background: rgb(24 25 26 / 50%);
+  background: rgba(104, 96, 77, 0.5);
   width: 100%;
   height: 100%;
 }
@@ -368,7 +372,7 @@ a {
 .reviews {
   & .review__item {
     padding: 40px;
-    border-bottom: 1px solid rgb(156 163 175 / 0.25);
+    border-bottom: 1px solid #8A8E75;
   }
 
   & time {
@@ -395,7 +399,7 @@ a {
     --tw-shadow:
       0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
     cursor: pointer;
-    background-color: rgb(255 202 40);
+    background-color: #BEC5A4;
     border-radius: 0.75rem;
     box-shadow:
       var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000),
@@ -411,10 +415,14 @@ a {
     box-shadow:
       var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000),
       var(--tw-shadow);
-    background-color: rgb(255 143 0);
+    background-color: #8A8E75;
     border-radius: 9999px;
     cursor: pointer;
     height: 4rem;
+  }
+  
+  .add:hover {
+    background-color: #BEC5A4;
   }
 
   .add input {
@@ -430,7 +438,7 @@ a {
   padding: 20px;
   font-size: 17px;
   border: none;
-  border-bottom: 2px solid rgb(255 111 0);
+  border-bottom: 2px solid #8A8E75;
   width: 100%;
 }
 
@@ -461,13 +469,12 @@ a {
 }
 
 .radio-input:checked ~ .radio-label {
-  color: #ffc700;
-  color: gold;
+  color: #BEC5A4;
 }
 
 .radio-label:hover,
 .radio-label:hover ~ .radio-label {
-  color: goldenrod;
+  color: #8A8E75;
 }
 
 .radio-input:checked + .radio-label:hover,
@@ -475,7 +482,7 @@ a {
 .radio-input:checked ~ .radio-label:hover,
 .radio-input:checked ~ .radio-label:hover ~ .radio-label,
 .radio-label:hover ~ .radio-input:checked ~ .radio-label {
-  color: darkgoldenrod;
+  color: #68604D;
 }
 
 .average-rating {
@@ -497,7 +504,7 @@ a {
   color: rgba(0, 0, 0, 0.2);
   background: linear-gradient(
     90deg,
-    gold var(--percent),
+    #BEC5A4 var(--percent),
     rgba(0, 0, 0, 0.2) var(--percent)
   );
   -webkit-background-clip: text;
@@ -514,7 +521,7 @@ a {
 .filter-menu {
   background-color: white;
   border-radius: 3px;
-  border-bottom: 1px solid rgb(27 58 87);
+  border-bottom: 1px solid #8A8E75;
 
   & summary {
     font-weight: bold;
@@ -536,7 +543,7 @@ a {
     flex-direction: column;
     flex-grow: 1;
 
-    color: rgb(75 85 99);
+    color: #68604D;
     font-size: 0.75rem;
     line-height: 1rem;
   }
@@ -552,7 +559,7 @@ a {
   }
 
   & select {
-    color: rgb(17 24 39);
+    color: #68604D;
     font-size: 0.875rem;
     line-height: 1.25rem;
     padding-top: 1rem;
@@ -562,7 +569,7 @@ a {
     border: 0;
     border-bottom-width: 2px;
     border-style: solid;
-    border-color: #e5e7eb;
+    border-color: #D5C7AD;
   }
 
   & p:first-child {
@@ -573,7 +580,7 @@ a {
   }
 
   & p:last-child {
-    color: rgb(42 72 101);
+    color: #8A8E75;
     font-weight: 600;
     font-size: 0.875rem;
     line-height: 1.25rem;
@@ -597,10 +604,14 @@ a {
     padding-bottom: 0.25rem;
     padding-left: 0.5rem;
     padding-right: 0.5rem;
-    background-color: rgb(71 98 130);
+    background-color: #8A8E75;
     border-radius: 9999px;
     color: white;
     font-size: 0.95rem;
+  }
+  
+  & span:hover {
+    background-color: #BEC5A4;
   }
 
   & button {
