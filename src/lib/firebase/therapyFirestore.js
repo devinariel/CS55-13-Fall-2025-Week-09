@@ -147,21 +147,30 @@ export async function updateClinicianImageReference(clinicianId, publicImageUrl)
 
 // Generate diverse profile image URL using multiple services for variety
 function getDiverseProfileImage(index, name) {
-  // Use Pravatar for diverse professional headshots (1-70 available)
-  // These are real-looking diverse portraits that work well for professional profiles
-  const pravatarIndex = (index % 70) + 1;
+  // Use RandomUser.me for professional, standard-sized headshots
+  // This service provides:
+  // - Standard 128x128px size (professional headshot format)
+  // - Professional-looking diverse portraits
+  // - Consistent quality and sizing
+  // - Real-looking photos suitable for medical/clinical profiles
   
-  // Ensure we get different images by using the index
-  // Pravatar provides diverse professional-looking photos
-  return `https://i.pravatar.cc/300?img=${pravatarIndex}`;
+  // Alternate between men and women for diversity
+  const gender = index % 2 === 0 ? 'women' : 'men';
+  // Use index to cycle through available photos (1-99 available per gender)
+  const photoIndex = (index % 99) + 1;
   
-  // Alternative options if Pravatar doesn't work well:
-  // Option 1: Dicebear with professional style
-  // const seed = name.replace(/[^a-zA-Z0-9]/g, '').toLowerCase() + index;
-  // return `https://api.dicebear.com/7.x/personas/svg?seed=${seed}`;
+  // RandomUser.me provides professional headshots with consistent dimensions
+  return `https://randomuser.me/api/portraits/${gender}/${photoIndex}.jpg`;
   
-  // Option 2: RandomUser API (requires different approach)
-  // return `https://randomuser.me/api/portraits/${index % 2 === 0 ? 'men' : 'women'}/${(index % 50) + 1}.jpg`;
+  // Alternative: Use ThisPersonDoesNotExist.com for AI-generated professional photos
+  // These look very professional but are AI-generated
+  // Note: This requires fetching and may have rate limits
+  // const seed = `${name.replace(/[^a-zA-Z0-9]/g, '').toLowerCase()}_${index}`;
+  // return `https://thispersondoesnotexist.com/?seed=${seed}`;
+  
+  // Alternative: Use Pravatar with larger size for more professional appearance
+  // const pravatarIndex = (index % 70) + 1;
+  // return `https://i.pravatar.cc/400?img=${pravatarIndex}`;
 }
 
 export async function addFakeData() {
