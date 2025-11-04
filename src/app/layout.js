@@ -10,7 +10,15 @@ export const metadata = {
 };
 
 export default async function RootLayout({ children }) {
-  const { currentUser } = await getAuthenticatedAppForUser();
+  let currentUser = null;
+  try {
+    const result = await getAuthenticatedAppForUser();
+    currentUser = result.currentUser;
+  } catch (error) {
+    console.error("Error initializing Firebase in layout:", error);
+    // Continue without user - app will still work, just without auth
+  }
+  
   return (
     <html lang="en">
       <body className="bg-[#FCE0C0] text-[#212C1B]">
