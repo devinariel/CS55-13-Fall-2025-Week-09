@@ -9,9 +9,19 @@ const ClinicianDetails = ({
   isOpen,
   children,
 }) => {
+  // Support both profilePicture and photo field names
+  const imageUrl = clinician.photo || clinician.profilePicture || '/profile.svg';
+  
   return (
     <section className="img__section">
-      <img src={clinician.photo} alt={clinician.name} />
+      <img 
+        src={imageUrl} 
+        alt={clinician.name || 'Clinician'} 
+        onError={(e) => {
+          // Fallback to default profile icon if image fails to load
+          e.target.src = '/profile.svg';
+        }}
+      />
 
       <div className="actions">
         {userId && (

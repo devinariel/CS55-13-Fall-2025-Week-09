@@ -46,9 +46,23 @@ function getClientFirebaseApp() {
 }
 
 // Initialize Firebase app - should always succeed with fallback values
-const firebaseApp = getClientFirebaseApp();
+let firebaseApp;
+try {
+  firebaseApp = getClientFirebaseApp();
+  console.log("Firebase initialized successfully");
+} catch (error) {
+  console.error("Firebase initialization failed:", error);
+  throw error;
+}
 
 // Export Firebase services
 export const auth = getFirebaseAuth(firebaseApp);
 export const db = getFirestore(firebaseApp);
 export const storage = getStorage(firebaseApp);
+
+// Log auth initialization
+if (auth) {
+  console.log("Firebase Auth initialized successfully");
+} else {
+  console.error("Firebase Auth failed to initialize");
+}

@@ -9,6 +9,8 @@ import { getClinicians } from "../lib/firebase/therapyFirestore";
 export default function ClinicianListings() {
   const [clinicians, setClinicians] = useState([]);
   const [selectedClinician, setSelectedClinician] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [filters, setFilters] = useState({
     city: "",
     specialization: "",
@@ -18,8 +20,18 @@ export default function ClinicianListings() {
 
   useEffect(() => {
     async function fetchClinicians() {
-      const fetchedClinicians = await getClinicians();
-      setClinicians(fetchedClinicians);
+      try {
+        setLoading(true);
+        setError(null);
+        const fetchedClinicians = await getClinicians();
+        console.log("Fetched clinicians:", fetchedClinicians);
+        setClinicians(fetchedClinicians || []);
+      } catch (err) {
+        console.error("Error fetching clinicians:", err);
+        setError(err.message || "Failed to load clinicians");
+      } finally {
+        setLoading(false);
+      }
     }
     fetchClinicians();
   }, []);
@@ -61,6 +73,40 @@ export default function ClinicianListings() {
         clinician={selectedClinician}
         onBack={() => setSelectedClinician(null)}
       />
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="p-4">
+        <p className="text-[#212C1B]">Loading clinicians...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-4">
+        <p className="text-red-600">Error: {error}</p>
+        <p className="text-sm text-[#212C1B] mt-2">
+          Make sure you're signed in and have permission to read clinicians.
+        </p>
+      </div>
+    );
+  }
+
+  if (filteredClinicians.length === 0) {
+    return (
+      <>
+        <Filters filters={filters} setFilters={setFilters} />
+        <div className="p-4 mt-4">
+          <p className="text-[#212C1B]">
+            {clinicians.length === 0 
+              ? "No clinicians found. Sign in and click 'Add Sample Clinicians' in the header to add sample data."
+              : "No clinicians match your filters. Try adjusting your search criteria."}
+          </p>
+        </div>
+      </>
     );
   }
 

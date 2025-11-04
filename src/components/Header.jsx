@@ -54,9 +54,14 @@ export default function Header({ initialUser }) {
   };
 
   // Handler for sign-in link clicks
-  const handleSignIn = (event) => {
+  const handleSignIn = async (event) => {
     event.preventDefault();
-    signInWithGoogle();
+    try {
+      await signInWithGoogle();
+    } catch (error) {
+      // Error is already handled in signInWithGoogle with alert
+      console.error("Sign-in failed:", error);
+    }
   };
 
   return (
@@ -83,7 +88,20 @@ export default function Header({ initialUser }) {
                 <li>{user.displayName}</li>
 
                 <li>
-                  <a href="#" onClick={() => addFakeData()}>
+                  <a 
+                    href="#" 
+                    onClick={async (e) => {
+                      e.preventDefault();
+                      try {
+                        await addFakeData();
+                        alert('Sample clinicians added successfully! The page will reload.');
+                        window.location.reload();
+                      } catch (error) {
+                        console.error('Error adding sample data:', error);
+                        alert('Error adding sample data. Check the console for details.');
+                      }
+                    }}
+                  >
                     Add Sample Clinicians
                   </a>
                 </li>

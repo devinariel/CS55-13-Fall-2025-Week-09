@@ -29,7 +29,15 @@ export default function ClinicianDetail({ clinician, onBack }) {
       <button onClick={onBack} className="text-sm text-[#657F38] font-semibold hover:underline">← Back to list</button>
       <div className="mt-4 bg-white p-4 rounded-lg shadow">
         <div className="flex items-center gap-4">
-          <img src={clinician.profilePicture || '/profile.svg'} className="w-20 h-20 rounded-full object-cover" />
+          <img 
+            src={clinician.profilePicture || clinician.photo || '/profile.svg'} 
+            alt={clinician.name || 'Clinician'}
+            className="w-20 h-20 rounded-full object-cover"
+            onError={(e) => {
+              // Fallback to default profile icon if image fails to load
+              e.target.src = '/profile.svg';
+            }}
+          />
           <div>
             <h2 className="text-xl font-bold text-[#212C1B]">{clinician.name}</h2>
             <p className="text-[#657F38]">{clinician.specialization} · {clinician.city}</p>
