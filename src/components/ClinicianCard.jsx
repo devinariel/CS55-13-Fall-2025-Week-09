@@ -6,7 +6,7 @@ export default function ClinicianCard({ clinician, onSelect }) {
   const imageUrl = clinician.profilePicture || clinician.photo || '/profile.svg';
   
   return (
-    <div className="bg-white rounded-lg p-4 shadow hover:shadow-lg cursor-pointer transition-shadow" onClick={onSelect}>
+    <div className="bg-white rounded-lg px-4 py-[15px] shadow hover:shadow-lg cursor-pointer transition-shadow" onClick={onSelect}>
       <div className="flex items-center gap-4">
         <img 
           src={imageUrl} 

@@ -50,60 +50,34 @@ export async function GeminiSummary({ clinicianId }) {
     const prompt = `Based on the following clinician reviews, create a concise one-sentence summary (max 100 words) of what people think of this mental health clinician. Focus on common themes, strengths, and overall fit.\n\nReviews:\n${reviewTexts.join('\n---\n')}`;
 
     // Call Gemini API directly
-    // Try gemini-2.0-flash-exp first, fallback to gemini-1.5-flash if not available
-    let response;
-    let model = 'gemini-2.0-flash-exp';
+    // Use gemini-1.5-flash (most reliable model)
+    const model = 'gemini-1.5-flash';
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
     
+    console.log('Calling Gemini API with model:', model);
+    console.log('Review texts count:', reviewTexts.length);
+    
+    let response;
     try {
-      response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            contents: [{
-              parts: [{
-                text: prompt
-              }]
-            }],
-            generationConfig: {
-              temperature: 0.7,
-              topK: 40,
-              topP: 0.95,
-              maxOutputTokens: 200,
-            }
-          }),
-        }
-      );
-      
-      // If model not found, try fallback
-      if (!response.ok && response.status === 404) {
-        model = 'gemini-1.5-flash';
-        response = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              contents: [{
-                parts: [{
-                  text: prompt
-                }]
-              }],
-              generationConfig: {
-                temperature: 0.7,
-                topK: 40,
-                topP: 0.95,
-                maxOutputTokens: 200,
-              }
-            }),
+      response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contents: [{
+            parts: [{
+              text: prompt
+            }]
+          }],
+          generationConfig: {
+            temperature: 0.7,
+            topK: 40,
+            topP: 0.95,
+            maxOutputTokens: 200,
           }
-        );
-      }
+        }),
+      });
     } catch (fetchError) {
       console.error('Fetch error:', fetchError);
       throw new Error(`Failed to connect to Gemini API: ${fetchError.message}`);
@@ -112,15 +86,31 @@ export async function GeminiSummary({ clinicianId }) {
     if (!response.ok) {
       const errorText = await response.text();
       console.error('Gemini API error:', response.status, errorText);
-      throw new Error(`Gemini API returned ${response.status}: ${errorText}`);
+      throw new Error(`Gemini API returned ${response.status}: ${errorText.substring(0, 200)}`);
     }
 
     const data = await response.json();
+    console.log('Gemini API response:', JSON.stringify(data, null, 2));
     
     // Extract the generated text from the response
-    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || 
-                 data?.response?.text || 
-                 'Unable to generate summary.';
+    // Gemini API response structure: data.candidates[0].content.parts[0].text
+    let text = '';
+    if (data?.candidates && data.candidates.length > 0) {
+      const candidate = data.candidates[0];
+      if (candidate?.content?.parts && candidate.content.parts.length > 0) {
+        text = candidate.content.parts[0].text || '';
+      }
+    }
+    
+    // Fallback parsing if structure is different
+    if (!text && data?.response?.text) {
+      text = data.response.text;
+    }
+    
+    if (!text || text.trim().length === 0) {
+      console.error('No text extracted from Gemini response:', data);
+      throw new Error('Gemini API returned empty response');
+    }
 
     // return JSX that shows the summary text and a note about Gemini
     return (
@@ -132,11 +122,33 @@ export async function GeminiSummary({ clinicianId }) {
   } catch (e) {
     // log errors and render an error message
     console.error('Error generating review summary:', e);
+    console.error('Error stack:', e.stack);
+    console.error('Error details:', {
+      message: e.message,
+      name: e.name,
+      cause: e.cause
+    });
+    
+    // Provide more helpful error messages
+    let errorMessage = 'Unable to generate summary at this time.';
+    if (e.message) {
+      if (e.message.includes('API key')) {
+        errorMessage = 'Gemini API key is missing or invalid. Please configure GEMINI_API_KEY environment variable.';
+      } else if (e.message.includes('403') || e.message.includes('401')) {
+        errorMessage = 'Gemini API authentication failed. Please check your API key.';
+      } else if (e.message.includes('429')) {
+        errorMessage = 'Gemini API rate limit exceeded. Please try again later.';
+      } else if (e.message.includes('404')) {
+        errorMessage = 'Gemini API model not found. Please check the model name.';
+      } else {
+        errorMessage = `Error: ${e.message}`;
+      }
+    }
+    
     return (
       <div className="clinician__review_summary">
-        <p className="text-[#8A8E75] italic">
-          Unable to generate summary at this time. {e.message ? `Error: ${e.message}` : 'Please try again later.'}
-        </p>
+        <p className="text-[#8A8E75] italic">{errorMessage}</p>
+        <p className="text-xs text-[#8A8E75] mt-2">Check the browser console (F12) for more details.</p>
       </div>
     );
   }

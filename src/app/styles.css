@@ -139,10 +139,6 @@ header {
   justify-content: space-between;
   padding: 0.8rem;
   align-items: center;
-  & img {
-    /* Logo size is now controlled by Tailwind classes (h-32 w-32) */
-    /* Remove fixed height to allow Tailwind classes to work */
-  }
 
   & ul {
     display: none;
