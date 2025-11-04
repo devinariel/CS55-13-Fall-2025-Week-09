@@ -11,8 +11,8 @@ export default async function Home(props) {
   const clinicians = await getClinicians(getFirestore(firebaseServerApp), searchParams);
 
   return (
-    <main className="p-4 md:p-8">
-      <h1 className="text-2xl font-bold text-[#68604D] mb-4">The Therapy Compass</h1>
+    <main className="main__home p-4 md:p-8">
+      <h1 className="text-3xl font-bold text-[#68604D] mb-6">The Therapy Compass</h1>
       <ClinicianList initialClinicians={clinicians} />
     </main>
   );

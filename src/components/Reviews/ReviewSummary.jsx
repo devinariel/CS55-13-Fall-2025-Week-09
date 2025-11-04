@@ -1,7 +1,3 @@
-// import the Gemini model and Google AI plugin from genkit
-import { gemini20Flash, googleAI } from "@genkit-ai/googleai";
-// import the genkit helper to create an AI client
-import { genkit } from "genkit";
 // import helper to fetch reviews from Firestore
 import { getReviewsByClinicianId } from "@/src/lib/firebase/therapyFirestore.js";
 // import server helper to get an authenticated Firebase app
@@ -36,20 +32,9 @@ export async function GeminiSummary({ clinicianId }) {
       );
     }
 
-    // use this character to separate reviews in the prompt
-    const reviewSeparator = "@";
-    // build a prompt that lists all review texts separated by reviewSeparator
-    const prompt = `
-  Based on the following clinician reviews, 
-  where each review is separated by a '${reviewSeparator}' character, 
-  create a concise one-sentence summary (max 100 words) of what people think of this mental health clinician. 
-  Focus on common themes, strengths, and overall fit. 
-
-  Here are the reviews: ${reviewTexts.join(reviewSeparator)}
-  `;
-
     // ensure the Gemini API key is available in environment
-    if (!process.env.GEMINI_API_KEY) {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
       // Fallback to a simple summary if Gemini is not configured
       return (
         <div className="clinician__review_summary">
@@ -61,18 +46,86 @@ export async function GeminiSummary({ clinicianId }) {
       );
     }
 
-    // create a genkit AI client with the Google AI plugin and default model
-    const ai = genkit({
-      plugins: [googleAI()],
-      model: gemini20Flash, // set default model
-    });
-    // generate text from the prompt
-    const { text } = await ai.generate(prompt);
+    // Build a prompt for the summary
+    const prompt = `Based on the following clinician reviews, create a concise one-sentence summary (max 100 words) of what people think of this mental health clinician. Focus on common themes, strengths, and overall fit.\n\nReviews:\n${reviewTexts.join('\n---\n')}`;
+
+    // Call Gemini API directly
+    // Try gemini-2.0-flash-exp first, fallback to gemini-1.5-flash if not available
+    let response;
+    let model = 'gemini-2.0-flash-exp';
+    
+    try {
+      response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            contents: [{
+              parts: [{
+                text: prompt
+              }]
+            }],
+            generationConfig: {
+              temperature: 0.7,
+              topK: 40,
+              topP: 0.95,
+              maxOutputTokens: 200,
+            }
+          }),
+        }
+      );
+      
+      // If model not found, try fallback
+      if (!response.ok && response.status === 404) {
+        model = 'gemini-1.5-flash';
+        response = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              contents: [{
+                parts: [{
+                  text: prompt
+                }]
+              }],
+              generationConfig: {
+                temperature: 0.7,
+                topK: 40,
+                topP: 0.95,
+                maxOutputTokens: 200,
+              }
+            }),
+          }
+        );
+      }
+    } catch (fetchError) {
+      console.error('Fetch error:', fetchError);
+      throw new Error(`Failed to connect to Gemini API: ${fetchError.message}`);
+    }
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Gemini API error:', response.status, errorText);
+      throw new Error(`Gemini API returned ${response.status}: ${errorText}`);
+    }
+
+    const data = await response.json();
+    
+    // Extract the generated text from the response
+    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || 
+                 data?.response?.text || 
+                 'Unable to generate summary.';
 
     // return JSX that shows the summary text and a note about Gemini
     return (
       <div className="clinician__review_summary">
-        <p className="text-[#68604D]">{text}</p>
+        <p className="text-[#68604D]">{text.trim()}</p>
         <p className="text-sm text-[#8A8E75] mt-2">✨ Summarized with Gemini</p>
       </div>
     );
@@ -82,7 +135,7 @@ export async function GeminiSummary({ clinicianId }) {
     return (
       <div className="clinician__review_summary">
         <p className="text-[#8A8E75] italic">
-          Unable to generate summary at this time. Please try again later.
+          Unable to generate summary at this time. {e.message ? `Error: ${e.message}` : 'Please try again later.'}
         </p>
       </div>
     );

@@ -140,7 +140,8 @@ header {
   padding: 0.8rem;
   align-items: center;
   & img {
-    height: 2rem;
+    /* Logo size is now controlled by Tailwind classes (h-32 w-32) */
+    /* Remove fixed height to allow Tailwind classes to work */
   }
 
   & ul {
