@@ -11,7 +11,7 @@ export default function ClinicianCard({ clinician, onSelect }) {
         <img 
           src={imageUrl} 
           alt={clinician.name || 'Clinician'} 
-          className="w-24 h-24 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-full object-cover flex-shrink-0"
+          className="w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 lg:w-56 lg:h-56 rounded-full object-cover flex-shrink-0"
           onError={(e) => {
             // Fallback to default profile icon if image fails to load
             e.target.src = '/profile.svg';

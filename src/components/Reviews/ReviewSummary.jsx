@@ -34,7 +34,16 @@ export async function GeminiSummary({ clinicianId }) {
 
     // ensure the Gemini API key is available in environment
     const apiKey = process.env.GEMINI_API_KEY;
+    
+    // Debug logging (without exposing the actual key)
+    console.log('Gemini API Key check:', {
+      hasKey: !!apiKey,
+      keyLength: apiKey ? apiKey.length : 0,
+      keyPrefix: apiKey ? apiKey.substring(0, 10) + '...' : 'none'
+    });
+    
     if (!apiKey) {
+      console.warn('GEMINI_API_KEY not found in environment variables');
       // Fallback to a simple summary if Gemini is not configured
       return (
         <div className="clinician__review_summary">
@@ -56,8 +65,12 @@ export async function GeminiSummary({ clinicianId }) {
     const model = 'gemini-1.5-flash';
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
     
-    console.log('Calling Gemini API with model:', model);
-    console.log('Review texts count:', reviewTexts.length);
+    console.log('Calling Gemini API:', {
+      model: model,
+      reviewTextsCount: reviewTexts.length,
+      promptLength: prompt.length,
+      apiUrlExists: !!apiUrl
+    });
     
     let response;
     try {
@@ -80,14 +93,24 @@ export async function GeminiSummary({ clinicianId }) {
           }
         }),
       });
+      
+      console.log('Gemini API response status:', response.status, response.statusText);
     } catch (fetchError) {
-      console.error('Fetch error:', fetchError);
+      console.error('Fetch error details:', {
+        message: fetchError.message,
+        stack: fetchError.stack,
+        name: fetchError.name
+      });
       throw new Error(`Failed to connect to Gemini API: ${fetchError.message}`);
     }
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Gemini API error:', response.status, errorText);
+      console.error('Gemini API error response:', {
+        status: response.status,
+        statusText: response.statusText,
+        errorText: errorText.substring(0, 500)
+      });
       throw new Error(`Gemini API returned ${response.status}: ${errorText.substring(0, 200)}`);
     }
 
