@@ -3,13 +3,10 @@
 import React, { useState, useEffect, useMemo } from "react";
 import Filters from "./Filters";
 import ClinicianCard from "./ClinicianCard";
-import ClinicianDetailModal from "./ClinicianDetailModal";
 import { getClinicians } from "../lib/firebase/therapyFirestore";
 
 export default function ClinicianListings() {
   const [clinicians, setClinicians] = useState([]);
-  const [selectedClinician, setSelectedClinician] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filters, setFilters] = useState({
@@ -68,22 +65,6 @@ export default function ClinicianListings() {
     return filtered;
   }, [clinicians, filters]);
 
-  const handleCardClick = (clinician) => {
-    console.log('Card clicked, opening modal for:', clinician.name);
-    setSelectedClinician(clinician);
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    console.log('Closing modal');
-    setIsModalOpen(false);
-    // Ensure body scroll is unlocked when closing
-    document.body.style.overflow = 'unset';
-    document.body.style.position = 'unset';
-    document.body.style.width = 'unset';
-    // Keep selectedClinician for potential navigation
-  };
-
   if (loading) {
     return (
       <div className="p-4">
@@ -127,18 +108,10 @@ export default function ClinicianListings() {
             <ClinicianCard
               key={clinician.id}
               clinician={clinician}
-              onSelect={() => handleCardClick(clinician)}
             />
           ))}
         </div>
       </div>
-      
-      {/* Modal */}
-      <ClinicianDetailModal
-        clinician={selectedClinician}
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-      />
     </>
   );
 }

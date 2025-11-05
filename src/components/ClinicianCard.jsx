@@ -1,23 +1,16 @@
 "use client";
 import React from "react";
+import Link from "next/link";
 import renderStars from "./Stars.jsx";
 
-export default function ClinicianCard({ clinician, onSelect }) {
+export default function ClinicianCard({ clinician }) {
   // Support both profilePicture and photo field names
   const imageUrl = clinician.profilePicture || clinician.photo || '/profile.svg';
   
   return (
-    <div 
-      className="clinician-card-modern bg-white rounded-lg shadow-sm hover:shadow-lg cursor-pointer transition-all duration-300 w-full max-w-sm mx-auto overflow-hidden border border-[#D5C7AD]/30"
-      onClick={onSelect}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          onSelect();
-        }
-      }}
+    <Link 
+      href={`/clinician/${clinician.id}`}
+      className="clinician-card-modern bg-white rounded-lg shadow-sm hover:shadow-lg cursor-pointer transition-all duration-300 w-full max-w-sm mx-auto overflow-hidden border border-[#D5C7AD]/30 block"
       aria-label={`View profile for ${clinician.name || 'clinician'}`}
     >
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-5">
@@ -63,6 +56,6 @@ export default function ClinicianCard({ clinician, onSelect }) {
           )}
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
