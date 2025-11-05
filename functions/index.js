@@ -20,7 +20,7 @@ const geminiApiKey = defineSecret("GEMINI_API_KEY");
 let aiInstance = null;
 
 /**
- * Get or create the Genkit AI instance with Google AI plugin
+ * Initialize Genkit with Google AI plugin and get AI instance
  * @return {Object} The initialized Genkit AI instance
  */
 function getAiInstance() {
@@ -79,18 +79,21 @@ exports.generateReviewSummary = onCall(
       let lastError = null;
 
       const modelsToTry = [
-        "googleai/gemini-1.5-flash",
-        "googleai/gemini-pro",
+        "gemini-1.5-flash",
+        "gemini-pro",
       ];
 
-      // Get AI instance (initialized with secret)
-      const ai = getAiInstance();
+      // Initialize Genkit (this configures the plugins)
+      getAiInstance();
 
       for (const modelName of modelsToTry) {
         try {
           logger.info(`Trying Genkit model: ${modelName}`);
 
-          const model = ai(modelName);
+          // Use the googleAI plugin's model method
+          // Extract just the model name (remove "googleai/" prefix if present)
+          const cleanModelName = modelName.replace("googleai/", "");
+          const model = googleAI.model(cleanModelName);
 
           response = await model.generate({
             prompt: prompt,
