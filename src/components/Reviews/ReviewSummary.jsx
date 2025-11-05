@@ -8,20 +8,37 @@ import { getFirestore } from "firebase/firestore";
 // server component: generate a one-sentence summary using Gemini
 export async function GeminiSummary({ clinicianId }) {
   try {
-  // get an authenticated Firebase server app for the current user
-  const { firebaseServerApp } = await getAuthenticatedAppForUser();
-  // fetch reviews for the clinician from Firestore
-  const reviews = await getReviewsByClinicianId(
-    // create a Firestore instance from the server app
-    getFirestore(firebaseServerApp),
-    // pass the clinician ID to fetch its reviews
-    clinicianId
-  );
+    // get an authenticated Firebase server app for the current user
+    const { firebaseServerApp } = await getAuthenticatedAppForUser();
+    // fetch reviews for the clinician from Firestore
+    const reviews = await getReviewsByClinicianId(
+      // create a Firestore instance from the server app
+      getFirestore(firebaseServerApp),
+      // pass the clinician ID to fetch its reviews
+      clinicianId
+    );
+
+    console.log('Fetched reviews for clinician:', {
+      clinicianId,
+      reviewsCount: reviews.length,
+      sampleReview: reviews[0] ? {
+        id: reviews[0].id,
+        hasText: !!(reviews[0].text || reviews[0].reviewText),
+        text: reviews[0].text || reviews[0].reviewText || 'N/A',
+        fields: Object.keys(reviews[0])
+      } : 'No reviews'
+    });
 
     // Filter out reviews with no text and get review texts
     const reviewTexts = reviews
       .map((review) => review.text || review.reviewText || '')
       .filter((text) => text.trim().length > 0);
+
+    console.log('Review texts extracted:', {
+      totalReviews: reviews.length,
+      reviewsWithText: reviewTexts.length,
+      sampleTexts: reviewTexts.slice(0, 2)
+    });
 
     // If no reviews with text, return a message
     if (reviewTexts.length === 0) {

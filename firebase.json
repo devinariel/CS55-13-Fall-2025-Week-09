@@ -73,7 +73,7 @@
           },
           {
             "secret": "GEMINI_API_KEY",
-            "environmentVariable": "TTC_GEMINI_API_KEY",
+            "environmentVariable": "GEMINI_API_KEY",
             "availability": ["RUNTIME"]
           }
         ]
