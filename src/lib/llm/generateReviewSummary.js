@@ -11,7 +11,10 @@ export async function generateReviewSummary(reviewTexts) {
   // If running on client-side, call the API route
   if (typeof window !== 'undefined') {
     try {
-      const response = await fetch('/api/generate-summary', {
+      const apiUrl = '/api/generate-summary';
+      console.log('Calling API route:', apiUrl, 'with', validTexts.length, 'reviews');
+      
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -20,8 +23,24 @@ export async function generateReviewSummary(reviewTexts) {
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-        console.error('API route error:', errorData);
+        const errorText = await response.text();
+        let errorData;
+        try {
+          errorData = JSON.parse(errorText);
+        } catch {
+          errorData = { error: errorText || `HTTP ${response.status}` };
+        }
+        
+        console.error('API route error:', {
+          status: response.status,
+          statusText: response.statusText,
+          error: errorData
+        });
+        
+        if (response.status === 404) {
+          return `Based on ${validTexts.length} ${validTexts.length === 1 ? 'review' : 'reviews'}, this clinician has received feedback from patients. AI summary service is not available. Please check server configuration.`;
+        }
+        
         return `Based on ${validTexts.length} ${validTexts.length === 1 ? 'review' : 'reviews'}, this clinician has received feedback from patients. ${errorData.error || 'Unable to generate AI summary at this time.'}`;
       }
 
@@ -29,6 +48,9 @@ export async function generateReviewSummary(reviewTexts) {
       return data.summary || 'No summary generated.';
     } catch (error) {
       console.error('Error calling generate-summary API:', error);
+      if (error.message && error.message.includes('404')) {
+        return `Based on ${validTexts.length} ${validTexts.length === 1 ? 'review' : 'reviews'}, this clinician has received feedback from patients. AI summary API endpoint not found. The application may need to be redeployed.`;
+      }
       return `Based on ${validTexts.length} ${validTexts.length === 1 ? 'review' : 'reviews'}, this clinician has received feedback from patients. Unable to generate AI summary: ${error.message}`;
     }
   }

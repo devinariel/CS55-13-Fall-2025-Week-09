@@ -1,5 +1,9 @@
 import { NextResponse } from 'next/server';
 
+// Force dynamic rendering for this route
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 // Server-side API route to generate Gemini summaries
 // This allows client components to request summaries without exposing the API key
 export async function POST(request) {
@@ -157,5 +161,15 @@ export async function POST(request) {
       { status: 500 }
     );
   }
+}
+
+// Optional GET handler for testing/debugging
+export async function GET() {
+  return NextResponse.json({ 
+    message: 'Generate Summary API endpoint',
+    method: 'POST',
+    description: 'Send review texts in the request body: { reviewTexts: string[] }',
+    status: 'ok'
+  });
 }
 
