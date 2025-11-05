@@ -30,7 +30,7 @@ export default async function Page(props) {
 
   return (
     // Updated className to reflect clinician focus
-    <main className="main__clinician p-4 md:p-8">
+    <main className="main__clinician p-4 md:p-6 lg:p-8 max-w-6xl mx-auto">
       {/* Use the imported alias ClinicianDetailComponent */}
       <ClinicianDetailComponent
         id={params.id}
@@ -43,8 +43,8 @@ export default async function Page(props) {
       </ClinicianDetailComponent>
 
       {/* Reviews Section */}
-      <div className="mt-8">
-        <h2 className="text-2xl font-semibold mb-4 text-[#68604D]">Reviews</h2>
+      <div className="mt-8 md:mt-10 lg:mt-12">
+        <h2 className="text-2xl md:text-3xl font-semibold mb-6 text-[#68604D]">Reviews</h2>
         <Suspense
           fallback={<ReviewsListSkeleton numReviews={clinician.numRatings} />}
         >

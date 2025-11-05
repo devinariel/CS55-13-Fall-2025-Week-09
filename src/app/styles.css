@@ -235,6 +235,19 @@ header {
 .main__clinician {
   background-color: #F1EAD8;
   min-height: 90vh;
+  padding: 1rem;
+}
+
+@media (min-width: 768px) {
+  .main__clinician {
+    padding: 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .main__clinician {
+    padding: 3rem;
+  }
 }
 
 article {
@@ -343,12 +356,27 @@ a {
   width: 100%;
   height: 400px;
   position: relative;
+  margin-bottom: 1.5rem;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  
   > img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     position: absolute;
     max-width: unset;
+  }
+  
+  @media (min-width: 768px) {
+    height: 450px;
+    margin-bottom: 2rem;
+  }
+  
+  @media (min-width: 1024px) {
+    height: 500px;
+    margin-bottom: 2.5rem;
   }
 }
 
@@ -358,18 +386,29 @@ a {
   padding: 20px;
   color: #F1EAD8;
   z-index: 2;
+  width: 100%;
 
   & h2 {
     color: #F1EAD8;
     font-weight: 700;
+    margin-bottom: 0.5rem;
   }
 
   & p {
     color: #F1EAD8;
+    margin-bottom: 0.5rem;
   }
 
   & span {
     color: inherit;
+  }
+  
+  @media (min-width: 768px) {
+    padding: 24px;
+  }
+  
+  @media (min-width: 1024px) {
+    padding: 32px;
   }
 }
 

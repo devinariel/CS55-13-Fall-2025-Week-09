@@ -40,7 +40,9 @@ export async function GeminiSummary({ clinicianId }) {
         <div className="clinician__review_summary">
           <p className="text-[#68604D]">
             {reviewTexts.length} {reviewTexts.length === 1 ? 'review' : 'reviews'} available. 
-            Gemini API key not configured for AI summaries.
+          </p>
+          <p className="text-sm text-[#8A8E75] mt-2 italic">
+            AI-powered summaries are currently unavailable. Please read individual reviews below for detailed feedback.
           </p>
         </div>
       );
