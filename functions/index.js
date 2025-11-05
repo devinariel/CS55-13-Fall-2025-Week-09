@@ -117,10 +117,10 @@ exports.generateReviewSummary = onCall(
 
       // Make a list of AI models to try, starting with the fastest one
       const modelsToTry = [
-        // First try the fast model
+        // First try the fast model (this is the most reliable)
         "gemini-1.5-flash",
         // If that doesn't work, try the more powerful model
-        "gemini-pro",
+        "gemini-1.5-pro",
       ];
 
       // Set up Genkit so we can use it (this connects to Google's AI)
