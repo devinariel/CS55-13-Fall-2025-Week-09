@@ -1,6 +1,6 @@
-// Helper to call Gemini API to generate thematic summary
+// Helper to call Firebase Function to generate thematic summary
 // This function can be called from client or server components
-// Client components will call the API route, server components can use this directly
+// Client components will call the Firebase Function, server components can use the server-side helper
 export async function generateReviewSummary(reviewTexts) {
   if (!reviewTexts || reviewTexts.length === 0) return 'No reviews yet.';
 
@@ -8,74 +8,33 @@ export async function generateReviewSummary(reviewTexts) {
   const validTexts = reviewTexts.filter(text => text && text.trim().length > 0);
   if (validTexts.length === 0) return 'No reviews yet.';
 
-  // If running on client-side, call the API route
+  // If running on client-side, call the Firebase Function
   if (typeof window !== 'undefined') {
     try {
-      const apiUrl = '/api/generate-summary';
-      console.log('Calling API route:', apiUrl, 'with', validTexts.length, 'reviews');
+      // Use Firebase Functions SDK for client-side calls
+      const { getFunctions, httpsCallable } = await import('firebase/functions');
+      const { firebaseApp } = await import('../firebase/clientApp');
       
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ reviewTexts: validTexts }),
+      const functions = getFunctions(firebaseApp);
+      const generateReviewSummary = httpsCallable(functions, 'generateReviewSummary');
+      
+      console.log('Calling Firebase Function: generateReviewSummary with', validTexts.length, 'reviews');
+      
+      const result = await generateReviewSummary({
+        reviewTexts: validTexts,
       });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        let errorData;
-        try {
-          errorData = JSON.parse(errorText);
-        } catch {
-          errorData = { error: errorText || `HTTP ${response.status}` };
-        }
-        
-        console.error('API route error:', {
-          status: response.status,
-          statusText: response.statusText,
-          error: errorData,
-          fullResponse: errorText
-        });
-        
-        if (response.status === 404) {
-          return `Based on ${validTexts.length} ${validTexts.length === 1 ? 'review' : 'reviews'}, this clinician has received feedback from patients. AI summary service is not available. Please check server configuration.`;
-        }
-        
-        // Extract error message from response
-        let errorMessage = 'Unable to generate AI summary at this time.';
-        if (errorData?.error) {
-          if (typeof errorData.error === 'string') {
-            errorMessage = errorData.error;
-          } else if (errorData.error.message) {
-            errorMessage = errorData.error.message;
-          } else if (errorData.error) {
-            // Try to extract any error message
-            errorMessage = JSON.stringify(errorData.error).substring(0, 200);
-          }
-        } else if (errorData) {
-          // If error is not nested, try to get it directly
-          errorMessage = JSON.stringify(errorData).substring(0, 200);
-        }
-        
-        // Log full error for debugging
-        console.error('Full API error response:', {
-          status: response.status,
-          errorData: errorData,
-          fullResponse: errorText
-        });
-        
-        return `Based on ${validTexts.length} ${validTexts.length === 1 ? 'review' : 'reviews'}, this clinician has received feedback from patients. ${errorMessage}`;
+      // Extract summary from Firebase Function response
+      const summary = result?.data?.summary || '';
+      
+      if (!summary || summary.trim().length === 0) {
+        return `Based on ${validTexts.length} ${validTexts.length === 1 ? 'review' : 'reviews'}, this clinician has received feedback from patients.`;
       }
 
-      const data = await response.json();
-      return data.summary || 'No summary generated.';
+      return summary.trim();
     } catch (error) {
-      console.error('Error calling generate-summary API:', error);
-      if (error.message && error.message.includes('404')) {
-        return `Based on ${validTexts.length} ${validTexts.length === 1 ? 'review' : 'reviews'}, this clinician has received feedback from patients. AI summary API endpoint not found. The application may need to be redeployed.`;
-      }
-      return `Based on ${validTexts.length} ${validTexts.length === 1 ? 'review' : 'reviews'}, this clinician has received feedback from patients. Unable to generate AI summary: ${error.message}`;
+      console.error('Error calling Firebase Function:', error);
+      return `Based on ${validTexts.length} ${validTexts.length === 1 ? 'review' : 'reviews'}, this clinician has received feedback from patients. Unable to generate AI summary: ${error.message || 'Unknown error'}`;
     }
   }
 

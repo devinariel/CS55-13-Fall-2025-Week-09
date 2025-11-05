@@ -59,6 +59,7 @@ try {
 export const auth = getFirebaseAuth(firebaseApp);
 export const db = getFirestore(firebaseApp);
 export const storage = getStorage(firebaseApp);
+export { firebaseApp };
 
 // Log auth initialization
 if (auth) {
