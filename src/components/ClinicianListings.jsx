@@ -114,7 +114,7 @@ export default function ClinicianListings() {
     <>
       <Filters filters={filters} setFilters={setFilters} />
       <div className="flex justify-center mt-6 mb-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 md:gap-10 lg:gap-12 w-full max-w-7xl px-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 md:gap-10 lg:gap-12 w-full max-w-7xl px-4" style={{ marginLeft: '25px' }}>
           {filteredClinicians.map((clinician) => (
             <ClinicianCard
               key={clinician.id}

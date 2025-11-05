@@ -13,7 +13,7 @@ const ClinicianDetails = ({
   const imageUrl = clinician.photo || clinician.profilePicture || '/profile.svg';
   
   return (
-    <section className="img__section mb-6 md:mb-8">
+    <section className="img__section mb-8">
       <img 
         src={imageUrl} 
         alt={clinician.name || 'Clinician'} 
@@ -52,19 +52,19 @@ const ClinicianDetails = ({
 
       <div className="details__container">
         <div className="details">
-          <h2 className="text-2xl md:text-3xl mb-2">{clinician.name}</h2>
+          <h2 className="text-2xl md:text-3xl mb-4">{clinician.name}</h2>
 
-          <div className="clinician__rating mb-3">
+          <div className="clinician__rating mb-4">
             <ul>{renderStars(clinician.avgRating)}</ul>
 
             <span className="ml-2">({clinician.numRatings})</span>
           </div>
 
-          <p className="text-base md:text-lg mb-2">
+          <p className="text-base md:text-lg mb-4">
             {clinician.specialization} | {clinician.city}
           </p>
-          {clinician.modality && <p className="text-sm md:text-base mb-3" style={{ color: '#F1EAD8' }}>Modality: {clinician.modality}</p>}
-          <div className="mt-4">
+          {clinician.modality && <p className="text-sm md:text-base mb-4" style={{ color: '#F1EAD8' }}>Modality: {clinician.modality}</p>}
+          <div className="mt-6">
             {children}
           </div>
         </div>

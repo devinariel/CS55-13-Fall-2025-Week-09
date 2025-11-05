@@ -50,17 +50,22 @@ export async function GeminiSummary({ clinicianId }) {
     }
 
     // ensure the Gemini API key is available in environment
-    const apiKey = process.env.GEMINI_API_KEY;
+    // Check multiple possible environment variable names for compatibility
+    const apiKey = process.env.GEMINI_API_KEY || process.env.TTC_GEMINI_API_KEY;
     
     // Debug logging (without exposing the actual key)
     console.log('Gemini API Key check:', {
       hasKey: !!apiKey,
       keyLength: apiKey ? apiKey.length : 0,
-      keyPrefix: apiKey ? apiKey.substring(0, 10) + '...' : 'none'
+      keyPrefix: apiKey ? apiKey.substring(0, 10) + '...' : 'none',
+      hasGEMINI_API_KEY: !!process.env.GEMINI_API_KEY,
+      hasTTC_GEMINI_API_KEY: !!process.env.TTC_GEMINI_API_KEY,
+      allEnvKeys: Object.keys(process.env).filter(key => key.includes('GEMINI') || key.includes('API'))
     });
     
     if (!apiKey) {
       console.warn('GEMINI_API_KEY not found in environment variables');
+      console.warn('Available env vars with GEMINI or API:', Object.keys(process.env).filter(key => key.includes('GEMINI') || key.includes('API')).join(', '));
       // Fallback to a simple summary if Gemini is not configured
       return (
         <div className="clinician__review_summary">
@@ -68,7 +73,7 @@ export async function GeminiSummary({ clinicianId }) {
             {reviewTexts.length} {reviewTexts.length === 1 ? 'review' : 'reviews'} available. 
           </p>
           <p className="text-sm text-[#8A8E75] mt-2 italic">
-            AI-powered summaries are currently unavailable. Please read individual reviews below for detailed feedback.
+            AI-powered summaries are currently unavailable. The GEMINI_API_KEY environment variable is not configured. Please check Firebase App Hosting secrets configuration.
           </p>
         </div>
       );

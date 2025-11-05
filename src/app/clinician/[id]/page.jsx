@@ -45,7 +45,7 @@ export default async function Page(props) {
       </div>
 
       {/* Reviews Section */}
-      <div className="mt-8 md:mt-10 lg:mt-12">
+      <div className="mt-8">
         <h2 className="text-2xl md:text-3xl font-semibold mb-6 text-[#68604D]">Reviews</h2>
         <div className="bg-white rounded-lg shadow-md p-4 md:p-6">
           <Suspense

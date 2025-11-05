@@ -1,4 +1,6 @@
 // Helper to call Gemini API to generate thematic summary
+// This function can be called from client or server components
+// Client components will call the API route, server components can use this directly
 export async function generateReviewSummary(reviewTexts) {
   if (!reviewTexts || reviewTexts.length === 0) return 'No reviews yet.';
 
@@ -6,10 +8,33 @@ export async function generateReviewSummary(reviewTexts) {
   const validTexts = reviewTexts.filter(text => text && text.trim().length > 0);
   if (validTexts.length === 0) return 'No reviews yet.';
 
-  // Check for API key (this is a client-side function, so it needs to be handled differently)
-  // For server-side, use process.env.GEMINI_API_KEY
-  // For client-side, we'd need to call a server API route
-  const apiKey = typeof window === 'undefined' ? process.env.GEMINI_API_KEY : null;
+  // If running on client-side, call the API route
+  if (typeof window !== 'undefined') {
+    try {
+      const response = await fetch('/api/generate-summary', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ reviewTexts: validTexts }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        console.error('API route error:', errorData);
+        return `Based on ${validTexts.length} ${validTexts.length === 1 ? 'review' : 'reviews'}, this clinician has received feedback from patients. ${errorData.error || 'Unable to generate AI summary at this time.'}`;
+      }
+
+      const data = await response.json();
+      return data.summary || 'No summary generated.';
+    } catch (error) {
+      console.error('Error calling generate-summary API:', error);
+      return `Based on ${validTexts.length} ${validTexts.length === 1 ? 'review' : 'reviews'}, this clinician has received feedback from patients. Unable to generate AI summary: ${error.message}`;
+    }
+  }
+
+  // Server-side: Check for API key
+  const apiKey = process.env.GEMINI_API_KEY || process.env.TTC_GEMINI_API_KEY;
   
   if (!apiKey) {
     // Return a fallback summary if API key is not available
