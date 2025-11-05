@@ -1,6 +1,5 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import renderStars from "./Stars.jsx";
 import ReviewsListClient from "./Reviews/ReviewsListClient";
@@ -8,12 +7,21 @@ import { getReviewsByClinicianId } from "../lib/firebase/therapyFirestore";
 import { useUser } from "../lib/getUser";
 
 export default function ClinicianDetailModal({ clinician, isOpen, onClose }) {
-  const router = useRouter();
-  const { user } = useUser();
+  const user = useUser();
   const [initialReviews, setInitialReviews] = useState([]);
   const [loadingReviews, setLoadingReviews] = useState(true);
   const [summary, setSummary] = useState("");
   const [loadingSummary, setLoadingSummary] = useState(false);
+
+  // Reset state when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      setInitialReviews([]);
+      setSummary('');
+      setLoadingReviews(true);
+      setLoadingSummary(false);
+    }
+  }, [isOpen]);
 
   // Load reviews when modal opens
   useEffect(() => {
@@ -34,44 +42,59 @@ export default function ClinicianDetailModal({ clinician, isOpen, onClose }) {
 
   // Load AI summary when modal opens and reviews are loaded
   useEffect(() => {
-    if (isOpen && clinician?.id && initialReviews.length > 0 && !loadingReviews) {
-      setLoadingSummary(true);
-      const reviewTexts = initialReviews
-        .map((review) => review.text || review.reviewText || '')
-        .filter((text) => text.trim().length > 0);
+    // Only fetch summary if modal is open, has clinician ID, reviews are loaded, and not currently loading reviews
+    if (!isOpen || !clinician?.id || loadingReviews) {
+      return;
+    }
 
-      if (reviewTexts.length === 0) {
-        setSummary('');
-        setLoadingSummary(false);
-        return;
-      }
-
-      fetch('/api/generate-summary', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ reviewTexts }),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.error) {
-            console.error('Error generating summary:', data.error);
-            setSummary(`Based on ${reviewTexts.length} ${reviewTexts.length === 1 ? 'review' : 'reviews'}, this clinician has received feedback from patients.`);
-          } else {
-            setSummary(data.summary || '');
-          }
-          setLoadingSummary(false);
-        })
-        .catch((error) => {
-          console.error('Error fetching summary:', error);
-          setSummary(`Based on ${reviewTexts.length} ${reviewTexts.length === 1 ? 'review' : 'reviews'}, this clinician has received feedback from patients.`);
-          setLoadingSummary(false);
-        });
-    } else if (isOpen && initialReviews.length === 0 && !loadingReviews) {
+    // If no reviews, clear summary
+    if (initialReviews.length === 0) {
       setSummary('');
       setLoadingSummary(false);
+      return;
     }
+
+    // Extract review texts
+    const reviewTexts = initialReviews
+      .map((review) => review.text || review.reviewText || '')
+      .filter((text) => text.trim().length > 0);
+
+    // If no valid review texts, clear summary
+    if (reviewTexts.length === 0) {
+      setSummary('');
+      setLoadingSummary(false);
+      return;
+    }
+
+    // Fetch summary from API
+    setLoadingSummary(true);
+    fetch('/api/generate-summary', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ reviewTexts }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`API returned ${res.status}`);
+        }
+        return res.json();
+      })
+      .then((data) => {
+        if (data.error) {
+          console.error('Error generating summary:', data.error);
+          setSummary(`Based on ${reviewTexts.length} ${reviewTexts.length === 1 ? 'review' : 'reviews'}, this clinician has received feedback from patients.`);
+        } else {
+          setSummary(data.summary || '');
+        }
+        setLoadingSummary(false);
+      })
+      .catch((error) => {
+        console.error('Error fetching summary:', error);
+        setSummary(`Based on ${reviewTexts.length} ${reviewTexts.length === 1 ? 'review' : 'reviews'}, this clinician has received feedback from patients.`);
+        setLoadingSummary(false);
+      });
   }, [isOpen, clinician?.id, initialReviews, loadingReviews]);
 
   // Close modal on Escape key
