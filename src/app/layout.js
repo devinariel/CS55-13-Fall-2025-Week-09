@@ -1,5 +1,6 @@
 import "./styles.css";
 import Header from "../components/Header.jsx";
+import ConsoleFilter from "../components/ConsoleFilter.jsx";
 import { getAuthenticatedAppForUser } from "../lib/firebase/serverApp";
 
 export const dynamic = "force-dynamic";
@@ -22,6 +23,7 @@ export default async function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className="bg-[#F1EAD8] text-[#68604D]">
+        <ConsoleFilter />
         <Header initialUser={currentUser?.toJSON()} />
         <main>{children}</main>
       </body>

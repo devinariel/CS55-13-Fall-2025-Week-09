@@ -30,10 +30,13 @@ export async function callGenerateReviewSummary(reviewTexts) {
     const projectId = process.env.TTC_FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'the-therapy-compass';
     
     // Build the web address (URL) for our AI function
+    // For v2 callable functions, we need to use the proper format
     const functionUrl = `https://us-central1-${projectId}.cloudfunctions.net/generateReviewSummary`;
     
     // Write a message to the console saying we're calling the function
     console.log('Calling Firebase Function:', functionUrl, 'with', validTexts.length, 'reviews');
+    console.log('Project ID:', projectId);
+    console.log('Review texts sample:', validTexts.slice(0, 1));
 
     // Send the reviews to the AI function and wait for a response
     const response = await fetch(functionUrl, {
@@ -45,7 +48,7 @@ export async function callGenerateReviewSummary(reviewTexts) {
       },
       // Convert our reviews into JSON format and send them
       body: JSON.stringify({
-        // Put the reviews inside a "data" object
+        // Put the reviews inside a "data" object (required for callable functions)
         data: {
           reviewTexts: validTexts,
         },
@@ -55,21 +58,43 @@ export async function callGenerateReviewSummary(reviewTexts) {
     // Check if the function said there was an error
     if (!response.ok) {
       // Get the error message from the response
-      const errorText = await response.text();
-      // Write an error message to the console
-      console.error('Firebase Function error:', response.status, errorText);
+      let errorText;
+      try {
+        errorText = await response.text();
+      } catch {
+        errorText = `HTTP ${response.status} ${response.statusText}`;
+      }
+      // Write an error message to the console with full details
+      console.error('Firebase Function error:', {
+        status: response.status,
+        statusText: response.statusText,
+        url: functionUrl,
+        errorText: errorText,
+      });
       // Throw an error so the calling code knows something went wrong
-      throw new Error(`Firebase Function returned ${response.status}: ${errorText}`);
+      throw new Error(`Firebase Function returned ${response.status}: ${errorText.substring(0, 200)}`);
     }
 
     // Convert the JSON response back into JavaScript data we can use
-    const result = await response.json();
+    let result;
+    try {
+      result = await response.json();
+    } catch (parseError) {
+      console.error('Failed to parse Firebase Function response:', parseError);
+      throw new Error('Firebase Function returned invalid JSON response');
+    }
+    
+    // Log the full response for debugging
+    console.log('Firebase Function response:', JSON.stringify(result, null, 2));
     
     // Try to get the summary from the response (it might be in different places)
+    // v2 callable functions return: { result: { summary: "..." } }
     const summary = result?.result?.summary || result?.summary || '';
     
     // Check if we got a summary
     if (!summary || summary.trim().length === 0) {
+      // Log that we got an empty summary
+      console.warn('Firebase Function returned empty summary. Full response:', result);
       // If no summary, tell the user how many reviews exist
       return `Based on ${validTexts.length} ${validTexts.length === 1 ? 'review' : 'reviews'}, this clinician has received feedback from patients.`;
     }
@@ -77,9 +102,14 @@ export async function callGenerateReviewSummary(reviewTexts) {
     // Return the summary, removing any extra spaces at the beginning or end
     return summary.trim();
   } catch (error) {
-    // If something went wrong, write an error message
-    console.error('Error calling Firebase Function:', error);
-    // Tell the user what happened in a friendly way
-    return `Based on ${validTexts.length} ${validTexts.length === 1 ? 'review' : 'reviews'}, this clinician has received feedback from patients. Unable to generate AI summary: ${error.message}`;
+    // If something went wrong, write a detailed error message
+    console.error('Error calling Firebase Function:', {
+      message: error.message,
+      stack: error.stack,
+      name: error.name,
+    });
+    // Tell the user what happened in a friendly way, but include more details
+    const errorDetails = error.message || 'Unknown error';
+    return `Based on ${validTexts.length} ${validTexts.length === 1 ? 'review' : 'reviews'}, this clinician has received feedback from patients. Unable to generate AI summary: ${errorDetails}`;
   }
 }
