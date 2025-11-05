@@ -77,6 +77,10 @@ export default function ClinicianListings() {
   const handleCloseModal = () => {
     console.log('Closing modal');
     setIsModalOpen(false);
+    // Ensure body scroll is unlocked when closing
+    document.body.style.overflow = 'unset';
+    document.body.style.position = 'unset';
+    document.body.style.width = 'unset';
     // Keep selectedClinician for potential navigation
   };
 

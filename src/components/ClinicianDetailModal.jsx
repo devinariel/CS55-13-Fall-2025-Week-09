@@ -108,19 +108,46 @@ export default function ClinicianDetailModal({ clinician, isOpen, onClose }) {
     return () => document.removeEventListener('keydown', handleEscape);
   }, [isOpen, onClose]);
 
-  // Prevent body scroll when modal is open
+  // Prevent body scroll when modal is open and visible
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && clinician) {
+      // Only lock scroll if modal is actually visible
+      const originalOverflow = document.body.style.overflow;
+      const originalPosition = document.body.style.position;
       document.body.style.overflow = 'hidden';
+      // Prevent scroll on mobile
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+      
+      return () => {
+        document.body.style.overflow = originalOverflow || 'unset';
+        document.body.style.position = originalPosition || 'unset';
+        document.body.style.width = 'unset';
+      };
     } else {
+      // Always unlock scroll when modal is closed
       document.body.style.overflow = 'unset';
+      document.body.style.position = 'unset';
+      document.body.style.width = 'unset';
     }
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, [isOpen]);
+  }, [isOpen, clinician]);
 
-  if (!isOpen || !clinician) return null;
+  // Debug logging
+  useEffect(() => {
+    if (isOpen && clinician) {
+      console.log('Modal should be visible:', { 
+        isOpen, 
+        clinicianId: clinician?.id, 
+        clinicianName: clinician?.name,
+        hasBackdrop: true,
+        hasModal: true
+      });
+    }
+  }, [isOpen, clinician]);
+
+  if (!isOpen || !clinician) {
+    return null;
+  }
 
   const imageUrl = clinician.profilePicture || clinician.photo || '/profile.svg';
 
@@ -128,14 +155,32 @@ export default function ClinicianDetailModal({ clinician, isOpen, onClose }) {
     <>
       {/* Backdrop */}
       <div
-        className="modal-backdrop fixed inset-0 bg-[#68604D]/70 backdrop-blur-sm z-[998] animate-fade-in"
+        className="modal-backdrop fixed inset-0 bg-[#68604D] backdrop-blur-sm animate-fade-in"
+        style={{ 
+          zIndex: 998,
+          opacity: 0.7,
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0
+        }}
         onClick={onClose}
         aria-hidden="true"
       />
 
       {/* Modal */}
       <div
-        className="modal-container fixed inset-0 z-[999] flex items-center justify-center p-4 overflow-y-auto"
+        className="modal-container fixed inset-0 flex items-center justify-center p-4 overflow-y-auto"
+        style={{ 
+          zIndex: 999,
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          pointerEvents: 'auto'
+        }}
         onClick={(e) => {
           if (e.target === e.currentTarget) {
             onClose();
@@ -145,7 +190,14 @@ export default function ClinicianDetailModal({ clinician, isOpen, onClose }) {
         aria-modal="true"
         aria-labelledby="modal-title"
       >
-        <div className="modal-content bg-white rounded-lg shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col animate-slide-up">
+        <div 
+          className="modal-content bg-white rounded-lg shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col animate-slide-up"
+          style={{
+            position: 'relative',
+            zIndex: 1000,
+            pointerEvents: 'auto'
+          }}
+        >
           {/* Header */}
           <div className="modal-header bg-gradient-to-r from-[#68604D] to-[#8A8E75] text-white p-6 flex items-start justify-between relative">
             <button
