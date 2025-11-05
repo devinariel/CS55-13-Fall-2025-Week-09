@@ -82,12 +82,12 @@ export async function GeminiSummary({ clinicianId }) {
     // Build a prompt for the summary
     const prompt = `Based on the following clinician reviews, create a concise one-sentence summary (max 100 words) of what people think of this mental health clinician. Focus on common themes, strengths, and overall fit.\n\nReviews:\n${reviewTexts.join('\n---\n')}`;
 
-    // Try different models and API versions in order
+    // Try different models in order - using v1beta API
+    // gemini-1.5-flash is the most reliable and widely available model
     const modelConfigs = [
       { model: 'gemini-1.5-flash', version: 'v1beta' },
-      { model: 'gemini-1.5-flash', version: 'v1' },
-      { model: 'gemini-pro', version: 'v1beta' },
-      { model: 'gemini-pro', version: 'v1' },
+      { model: 'gemini-1.5-flash-latest', version: 'v1beta' },
+      { model: 'gemini-1.5-pro', version: 'v1beta' },
     ];
 
     let response;

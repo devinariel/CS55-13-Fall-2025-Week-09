@@ -40,12 +40,12 @@ export async function POST(request) {
     // Build prompt
     const prompt = `Based on the following clinician reviews, create a concise one-sentence summary (max 100 words) of what people think of this mental health clinician. Focus on common themes, strengths, and overall fit.\n\nReviews:\n${validTexts.join('\n---\n')}`;
 
-    // Try different models and API versions in order
+    // Try different models in order - using v1beta API
+    // gemini-1.5-flash is the most reliable and widely available model
     const modelConfigs = [
       { model: 'gemini-1.5-flash', version: 'v1beta' },
-      { model: 'gemini-1.5-flash', version: 'v1' },
-      { model: 'gemini-pro', version: 'v1beta' },
-      { model: 'gemini-pro', version: 'v1' },
+      { model: 'gemini-1.5-flash-latest', version: 'v1beta' },
+      { model: 'gemini-1.5-pro', version: 'v1beta' },
     ];
 
     let response;
@@ -99,6 +99,32 @@ export async function POST(request) {
           continue;
         }
 
+        // For 400/401/403 errors, check if it's an API key issue - don't try other models
+        if (response.status === 400 || response.status === 401 || response.status === 403) {
+          const errorText = await response.text();
+          let errorData;
+          try {
+            errorData = JSON.parse(errorText);
+          } catch {
+            errorData = { error: { message: errorText } };
+          }
+          
+          // Check if it's an API key error
+          if (errorData?.error?.code === 400 && 
+              (errorData?.error?.message?.includes('API key') || 
+               errorData?.error?.details?.some(d => d.reason === 'API_KEY_INVALID'))) {
+            lastError = { 
+              status: response.status, 
+              message: errorText, 
+              model: config.model, 
+              version: config.version,
+              apiKeyInvalid: true
+            };
+            console.error('API key is invalid! Stopping attempts.');
+            break; // Don't try other models if API key is invalid
+          }
+        }
+
         // For other errors, save and try next
         const errorText = await response.text();
         lastError = { status: response.status, message: errorText, model: config.model, version: config.version };
@@ -113,10 +139,37 @@ export async function POST(request) {
     // Check if we got a successful response
     if (!response || !response.ok) {
       console.error('All Gemini API models failed. Last error:', lastError);
+      
+      // Provide a more helpful error message
+      let errorMessage = 'Gemini API models not available. ';
+      
+      // Check if API key is invalid
+      if (lastError?.apiKeyInvalid || 
+          (lastError?.status === 400 && lastError?.message?.includes('API key'))) {
+        errorMessage = 'Gemini API key is invalid or not configured correctly. ';
+        errorMessage += 'Please verify your GEMINI_API_KEY secret in Firebase App Hosting. ';
+        errorMessage += 'Steps: 1) Go to Firebase Console → App Hosting → Secrets, ';
+        errorMessage += '2) Verify GEMINI_API_KEY exists and is correct, ';
+        errorMessage += '3) Get a new API key from https://aistudio.google.com/app/apikey if needed.';
+      } else if (lastError?.status === 404) {
+        errorMessage += 'The requested model was not found. Please check your API key has access to Gemini models. ';
+      } else if (lastError?.status === 401 || lastError?.status === 403) {
+        errorMessage += 'Authentication failed. Please verify your API key is correct and has proper permissions. ';
+      } else if (lastError?.status === 429) {
+        errorMessage += 'Rate limit exceeded. Please try again later. ';
+      } else {
+        errorMessage += `Last attempt returned ${lastError?.status || 'unknown'} status. `;
+      }
+      
+      if (!lastError?.apiKeyInvalid) {
+        errorMessage += `Tried models: ${modelConfigs.map(c => c.model).join(', ')}`;
+      }
+      
       return NextResponse.json(
         { 
-          error: `Gemini API models not available. Last attempt: ${lastError?.status || 'unknown'} - ${lastError?.message?.substring(0, 200) || lastError?.error || 'Unknown error'}`,
-          details: lastError
+          error: errorMessage,
+          details: lastError,
+          triedModels: lastError?.apiKeyInvalid ? [] : modelConfigs.map(c => `${c.model} (${c.version})`)
         },
         { status: 500 }
       );
