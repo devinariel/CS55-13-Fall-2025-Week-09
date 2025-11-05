@@ -1,9 +1,8 @@
 "use client";
-import React, { useEffect, useState, Suspense } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import renderStars from "./Stars.jsx";
-import { GeminiSummary, GeminiSummarySkeleton } from "./Reviews/ReviewSummary";
 import ReviewsListClient from "./Reviews/ReviewsListClient";
 import { getReviewsByClinicianId } from "../lib/firebase/therapyFirestore";
 import { useUser } from "../lib/getUser";
@@ -13,6 +12,8 @@ export default function ClinicianDetailModal({ clinician, isOpen, onClose }) {
   const { user } = useUser();
   const [initialReviews, setInitialReviews] = useState([]);
   const [loadingReviews, setLoadingReviews] = useState(true);
+  const [summary, setSummary] = useState("");
+  const [loadingSummary, setLoadingSummary] = useState(false);
 
   // Load reviews when modal opens
   useEffect(() => {
@@ -30,6 +31,48 @@ export default function ClinicianDetailModal({ clinician, isOpen, onClose }) {
         });
     }
   }, [isOpen, clinician?.id]);
+
+  // Load AI summary when modal opens and reviews are loaded
+  useEffect(() => {
+    if (isOpen && clinician?.id && initialReviews.length > 0 && !loadingReviews) {
+      setLoadingSummary(true);
+      const reviewTexts = initialReviews
+        .map((review) => review.text || review.reviewText || '')
+        .filter((text) => text.trim().length > 0);
+
+      if (reviewTexts.length === 0) {
+        setSummary('');
+        setLoadingSummary(false);
+        return;
+      }
+
+      fetch('/api/generate-summary', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ reviewTexts }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.error) {
+            console.error('Error generating summary:', data.error);
+            setSummary(`Based on ${reviewTexts.length} ${reviewTexts.length === 1 ? 'review' : 'reviews'}, this clinician has received feedback from patients.`);
+          } else {
+            setSummary(data.summary || '');
+          }
+          setLoadingSummary(false);
+        })
+        .catch((error) => {
+          console.error('Error fetching summary:', error);
+          setSummary(`Based on ${reviewTexts.length} ${reviewTexts.length === 1 ? 'review' : 'reviews'}, this clinician has received feedback from patients.`);
+          setLoadingSummary(false);
+        });
+    } else if (isOpen && initialReviews.length === 0 && !loadingReviews) {
+      setSummary('');
+      setLoadingSummary(false);
+    }
+  }, [isOpen, clinician?.id, initialReviews, loadingReviews]);
 
   // Close modal on Escape key
   useEffect(() => {
@@ -140,9 +183,20 @@ export default function ClinicianDetailModal({ clinician, isOpen, onClose }) {
             {/* AI Summary Section */}
             <div className="ai-summary-section">
               <h3 className="text-lg font-semibold text-[#68604D] mb-3">AI-Generated Summary</h3>
-              <Suspense fallback={<GeminiSummarySkeleton />}>
-                <GeminiSummary clinicianId={clinician.id} />
-              </Suspense>
+              {loadingSummary ? (
+                <div className="clinician__review_summary">
+                  <p className="text-[#8A8E75] text-base">✨ Summarizing reviews with Gemini...</p>
+                </div>
+              ) : summary ? (
+                <div className="clinician__review_summary">
+                  <p className="text-[#68604D] text-base leading-relaxed">{summary}</p>
+                  <p className="text-sm text-[#8A8E75] mt-2 italic">✨ Summarized with Gemini via Genkit</p>
+                </div>
+              ) : (
+                <div className="clinician__review_summary">
+                  <p className="text-[#8A8E75] italic text-base">No reviews yet. Be the first to share your experience!</p>
+                </div>
+              )}
             </div>
 
             {/* Reviews Section */}
