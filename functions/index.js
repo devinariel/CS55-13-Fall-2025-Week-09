@@ -25,8 +25,6 @@ const geminiApiKey = defineSecret("GEMINI_API_KEY");
 
 // Create a variable to remember if we've set up Genkit yet
 let aiInstance = null;
-// Create a variable to remember the configured Google AI plugin instance
-let googleAIPlugin = null;
 
 /**
  * Set up Genkit with Google AI so we can use Gemini models
@@ -43,7 +41,7 @@ function getAiInstance() {
       throw new Error("GEMINI_API_KEY secret is not available");
     }
     // Create the Google AI plugin instance with our API key
-    googleAIPlugin = googleAI({apiKey: apiKey});
+    const googleAIPlugin = googleAI({apiKey: apiKey});
     // Set up Genkit with the Google AI plugin and our API key
     aiInstance = genkit({
       // Tell Genkit to use the Google AI plugin with our API key
@@ -56,17 +54,6 @@ function getAiInstance() {
   }
   // Give back the Genkit AI instance so we can use it
   return aiInstance;
-}
-
-/**
- * Get the configured Google AI plugin instance so we can use its models
- * @return {Object} The configured Google AI plugin instance
- */
-function getGoogleAIPlugin() {
-  // Make sure Genkit is initialized first
-  getAiInstance();
-  // Return the plugin instance we created
-  return googleAIPlugin;
 }
 
 // Set a limit on how many copies of functions can run at the same time
@@ -148,15 +135,16 @@ exports.generateReviewSummary = onCall(
 
           // Remove the "googleai/" part from the model name if it's there
           const cleanModelName = modelName.replace("googleai/", "");
-          // Get the configured Google AI plugin instance
-          const plugin = getGoogleAIPlugin();
-          // Get the specific AI model we want to use from the plugin
-          // The plugin's model() method returns a model instance we can use
-          const model = plugin.model(cleanModelName);
+          // Get the configured Genkit AI instance
+          const ai = getAiInstance();
+          // Build the full model name with the plugin prefix
+          const fullModelName = `googleai/${cleanModelName}`;
 
           // Ask the AI to generate a summary and wait for the answer
-          // The model.generate() method takes a prompt and configuration
-          response = await model.generate({
+          // Use the ai.generate() method with the model name
+          response = await ai.generate({
+            // Tell it which model to use
+            model: fullModelName,
             // Send the question/instruction we built earlier
             prompt: prompt,
             // Tell the AI how to behave
@@ -196,8 +184,13 @@ exports.generateReviewSummary = onCall(
         } catch (error) {
           // If this model failed, save the error
           lastError = error;
-          // Write a warning message about what went wrong
-          logger.warn(`Model ${modelName} failed:`, error.message);
+          // Write a detailed warning message about what went wrong
+          logger.warn(`Model ${modelName} failed:`, {
+            message: error.message,
+            stack: error.stack,
+            name: error.name,
+            model: modelName,
+          });
           // Try the next model in the list
           continue;
         }
@@ -206,19 +199,26 @@ exports.generateReviewSummary = onCall(
       // Check if none of the models worked
       if (!response) {
         // Write an error message saying all models failed
-        logger.error("All Genkit models failed", lastError);
+        logger.error("All Genkit models failed", {
+          error: lastError,
+          message: lastError?.message,
+          stack: lastError?.stack,
+          modelsTried: modelsToTry,
+        });
         // Count how many reviews we had
         const reviewCount = validTexts.length;
         // Use the right word (review vs reviews) based on the count
         const reviewText = reviewCount === 1 ? "review" : "reviews";
+        // Build an error message with details
+        const errorMsg = lastError?.message || "Unknown error";
         // Send back a message explaining what happened
         return {
           // Build a message telling the user about the reviews
           summary: `Based on ${reviewCount} ${reviewText}, ` +
             `this clinician has received feedback from patients. ` +
-            `Unable to generate AI summary at this time.`,
+            `Unable to generate AI summary: ${errorMsg}`,
           // Include the error message if we have one
-          error: (lastError && lastError.message) || "Unknown error",
+          error: errorMsg,
         };
       }
 
