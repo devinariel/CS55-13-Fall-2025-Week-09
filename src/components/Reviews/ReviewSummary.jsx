@@ -82,47 +82,28 @@ export async function GeminiSummary({ clinicianId }) {
     // Build a prompt for the summary
     const prompt = `Based on the following clinician reviews, create a concise one-sentence summary (max 100 words) of what people think of this mental health clinician. Focus on common themes, strengths, and overall fit.\n\nReviews:\n${reviewTexts.join('\n---\n')}`;
 
-    // Call Gemini API directly
-    // Try gemini-1.5-flash first, fallback to gemini-1.5-pro if needed
-    let model = 'gemini-1.5-flash';
-    let apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-    
-    console.log('Calling Gemini API:', {
-      model: model,
-      reviewTextsCount: reviewTexts.length,
-      promptLength: prompt.length,
-      hasApiKey: !!apiKey
-    });
-    
+    // Try different models and API versions in order
+    const modelConfigs = [
+      { model: 'gemini-1.5-flash', version: 'v1beta' },
+      { model: 'gemini-1.5-flash', version: 'v1' },
+      { model: 'gemini-pro', version: 'v1beta' },
+      { model: 'gemini-pro', version: 'v1' },
+    ];
+
     let response;
-    try {
-      response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          contents: [{
-            parts: [{
-              text: prompt
-            }]
-          }],
-          generationConfig: {
-            temperature: 0.7,
-            topK: 40,
-            topP: 0.95,
-            maxOutputTokens: 200,
-          }
-        }),
+    let lastError = null;
+    let successfulModel = null;
+
+    for (const config of modelConfigs) {
+      const apiUrl = `https://generativelanguage.googleapis.com/${config.version}/models/${config.model}:generateContent?key=${apiKey}`;
+
+      console.log('Trying Gemini API:', {
+        model: config.model,
+        version: config.version,
+        reviewTextsCount: reviewTexts.length,
       });
-      
-      console.log('Gemini API response status:', response.status, response.statusText);
-      
-      // If model not found, try alternative
-      if (response.status === 404) {
-        console.log('Model not found, trying gemini-1.5-pro...');
-        model = 'gemini-1.5-pro';
-        apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+      try {
         response = await fetch(apiUrl, {
           method: 'POST',
           headers: {
@@ -142,37 +123,41 @@ export async function GeminiSummary({ clinicianId }) {
             }
           }),
         });
-        console.log('Fallback model response status:', response.status, response.statusText);
+
+        console.log('Gemini API response status:', response.status, response.statusText, `(${config.model}/${config.version})`);
+
+        // If successful, break out of the loop
+        if (response.ok) {
+          successfulModel = `${config.model} (${config.version})`;
+          break;
+        }
+
+        // If 404, try next model
+        if (response.status === 404) {
+          const errorText = await response.text();
+          lastError = { status: 404, message: errorText, model: config.model, version: config.version };
+          console.log(`Model ${config.model} not found in ${config.version}, trying next...`);
+          continue;
+        }
+
+        // For other errors, save and try next
+        const errorText = await response.text();
+        lastError = { status: response.status, message: errorText, model: config.model, version: config.version };
+        console.log(`Model ${config.model} returned ${response.status}, trying next...`);
+      } catch (fetchError) {
+        lastError = { error: fetchError.message, model: config.model, version: config.version };
+        console.error(`Error with ${config.model}/${config.version}:`, fetchError.message);
+        continue;
       }
-    } catch (fetchError) {
-      console.error('Fetch error details:', {
-        message: fetchError.message,
-        stack: fetchError.stack,
-        name: fetchError.name
-      });
-      throw new Error(`Failed to connect to Gemini API: ${fetchError.message}`);
     }
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Gemini API error response:', {
-        status: response.status,
-        statusText: response.statusText,
-        errorText: errorText.substring(0, 500),
-        model: model
-      });
-      
-      // Provide more specific error messages
-      if (response.status === 401 || response.status === 403) {
-        throw new Error(`Authentication failed (${response.status}). Please verify your Gemini API key is correct and has proper permissions.`);
-      } else if (response.status === 429) {
-        throw new Error('Rate limit exceeded. Please try again later.');
-      } else if (response.status === 400) {
-        throw new Error(`Bad request (${response.status}). ${errorText.substring(0, 100)}`);
-      } else {
-        throw new Error(`Gemini API returned ${response.status}: ${errorText.substring(0, 200)}`);
-      }
+    // Check if we got a successful response
+    if (!response || !response.ok) {
+      console.error('All Gemini API models failed. Last error:', lastError);
+      throw new Error(`Gemini API models not available. Last attempt: ${lastError?.status || 'unknown'} - ${lastError?.message?.substring(0, 200) || lastError?.error || 'Unknown error'}`);
     }
+
+    console.log(`Successfully used model: ${successfulModel}`);
 
     const data = await response.json();
     console.log('Gemini API response:', JSON.stringify(data, null, 2));
@@ -248,3 +233,4 @@ export function GeminiSummarySkeleton() {
     </div>
   );
 }
+

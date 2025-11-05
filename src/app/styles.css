@@ -162,19 +162,25 @@ header {
 .logo {
   display: flex;
   align-items: center;
+  cursor: pointer;
+  text-decoration: none;
 
   & img {
     margin-inline-end: 10px;
-    /* Reduce logo size by 1.5x (divide by 1.5 = multiply by 2/3) */
-    /* Using transform scale for more reliable size reduction */
-    transform: scale(0.667);
+    /* Make logo 2x smaller (50% of original size) */
+    transform: scale(0.5);
     transform-origin: left center;
     width: auto;
     height: auto;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+  }
+
+  &:hover img {
+    opacity: 0.8;
   }
 
   color: #F1EAD8;
-  text-decoration: none;
   font-size: 1.25rem;
   font-weight: 500;
 }
@@ -259,6 +265,7 @@ header {
   background-color: #F1EAD8;
   min-height: 90vh;
   padding: 1rem;
+  margin-left: 25px;
 }
 
 @media (min-width: 768px) {
@@ -422,15 +429,25 @@ a {
     color: #F1EAD8;
     font-weight: 700;
     margin-bottom: 1rem;
+    line-height: 1.5;
   }
 
   & p {
     color: #F1EAD8;
     margin-bottom: 1rem;
+    line-height: calc(1em + 15px);
   }
 
   & span {
     color: inherit;
+  }
+
+  & > * {
+    margin-bottom: 15px;
+  }
+
+  & > *:last-child {
+    margin-bottom: 0;
   }
   
   @media (min-width: 768px) {
