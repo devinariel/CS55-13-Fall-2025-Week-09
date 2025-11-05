@@ -39,42 +39,58 @@
           {
             "secret": "FIREBASE_API_KEY",
             "environmentVariable": "TTC_FIREBASE_API_KEY",
-            "availability": ["RUNTIME"]
+            "availability": [
+              "RUNTIME"
+            ]
           },
           {
             "secret": "FIREBASE_AUTH_DOMAIN",
             "environmentVariable": "TTC_FIREBASE_AUTH_DOMAIN",
-            "availability": ["RUNTIME"]
+            "availability": [
+              "RUNTIME"
+            ]
           },
           {
             "secret": "FIREBASE_PROJECT_ID",
             "environmentVariable": "TTC_FIREBASE_PROJECT_ID",
-            "availability": ["RUNTIME"]
+            "availability": [
+              "RUNTIME"
+            ]
           },
           {
             "secret": "FIREBASE_STORAGE_BUCKET",
             "environmentVariable": "TTC_FIREBASE_STORAGE_BUCKET",
-            "availability": ["RUNTIME"]
+            "availability": [
+              "RUNTIME"
+            ]
           },
           {
             "secret": "FIREBASE_MESSAGING_SENDER_ID",
             "environmentVariable": "TTC_FIREBASE_MESSAGING_SENDER_ID",
-            "availability": ["RUNTIME"]
+            "availability": [
+              "RUNTIME"
+            ]
           },
           {
             "secret": "FIREBASE_APP_ID",
             "environmentVariable": "TTC_FIREBASE_APP_ID",
-            "availability": ["RUNTIME"]
+            "availability": [
+              "RUNTIME"
+            ]
           },
           {
             "secret": "DATABASE_PASSWORD",
             "environmentVariable": "TTC_DATABASE_PASSWORD",
-            "availability": ["RUNTIME"]
+            "availability": [
+              "RUNTIME"
+            ]
           },
           {
             "secret": "GEMINI_API_KEY",
             "environmentVariable": "GEMINI_API_KEY",
-            "availability": ["RUNTIME"]
+            "availability": [
+              "RUNTIME"
+            ]
           }
         ]
       },
@@ -82,32 +98,44 @@
         {
           "variable": "NEXT_PUBLIC_FIREBASE_API_KEY",
           "value": "AIzaSyB1XF3ZTH7FmN_V6OOqlz01gKyKRzbbdhA",
-          "availability": ["BUILD"]
+          "availability": [
+            "BUILD"
+          ]
         },
         {
           "variable": "NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN",
           "value": "the-therapy-compass.firebaseapp.com",
-          "availability": ["BUILD"]
+          "availability": [
+            "BUILD"
+          ]
         },
         {
           "variable": "NEXT_PUBLIC_FIREBASE_PROJECT_ID",
           "value": "the-therapy-compass",
-          "availability": ["BUILD"]
+          "availability": [
+            "BUILD"
+          ]
         },
         {
           "variable": "NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET",
           "value": "the-therapy-compass.firebasestorage.app",
-          "availability": ["BUILD"]
+          "availability": [
+            "BUILD"
+          ]
         },
         {
           "variable": "NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID",
           "value": "489155622257",
-          "availability": ["BUILD"]
+          "availability": [
+            "BUILD"
+          ]
         },
         {
           "variable": "NEXT_PUBLIC_FIREBASE_APP_ID",
           "value": "1:489155622257:web:bf99cea7b388504fee72d0",
-          "availability": ["BUILD"]
+          "availability": [
+            "BUILD"
+          ]
         }
       ],
       "backendId": "thetherapycompass",
@@ -121,6 +149,22 @@
       ],
       "alwaysDeployFromSource": false
     }
+  ],
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "disallowLegacyRuntimeConfig": true,
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ],
+      "predeploy": [
+        "npm --prefix \"$RESOURCE_DIR\" run lint"
+      ]
+    }
   ]
 }
-

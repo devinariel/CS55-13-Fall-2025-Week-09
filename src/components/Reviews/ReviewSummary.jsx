@@ -4,8 +4,8 @@ import { getReviewsByClinicianId } from "@/src/lib/firebase/therapyFirestore.js"
 import { getAuthenticatedAppForUser } from "@/src/lib/firebase/serverApp";
 // import getFirestore to create a Firestore instance from the app
 import { getFirestore } from "firebase/firestore";
-// import Genkit-based summarizer
-import { generateReviewSummaryWithGenkit } from "@/src/lib/genkit/reviewSummarizer.js";
+// import helper to call Firebase Function
+import { callGenerateReviewSummary } from "@/src/lib/firebase/functions.js";
 
 // server component: generate a one-sentence summary using Gemini
 export async function GeminiSummary({ clinicianId }) {
@@ -51,11 +51,11 @@ export async function GeminiSummary({ clinicianId }) {
       );
     }
 
-    // Use Genkit to generate summary
-    console.log('Generating summary with Genkit for', reviewTexts.length, 'reviews');
+    // Use Firebase Function with Genkit to generate summary
+    console.log('Generating summary with Firebase Function (Genkit) for', reviewTexts.length, 'reviews');
     
     try {
-      const summary = await generateReviewSummaryWithGenkit(reviewTexts);
+      const summary = await callGenerateReviewSummary(reviewTexts);
       
       // return JSX that shows the summary text and a note about Gemini
       return (
@@ -64,8 +64,8 @@ export async function GeminiSummary({ clinicianId }) {
           <p className="text-sm text-[#8A8E75] mt-2">✨ Summarized with Gemini via Genkit</p>
         </div>
       );
-    } catch (genkitError) {
-      console.error('Genkit summary generation failed:', genkitError);
+    } catch (functionError) {
+      console.error('Firebase Function error:', functionError);
       // Fallback to show reviews available
       return (
         <div className="clinician__review_summary">
@@ -73,7 +73,7 @@ export async function GeminiSummary({ clinicianId }) {
             {reviewTexts.length} {reviewTexts.length === 1 ? 'review' : 'reviews'} available.
           </p>
           <p className="text-sm text-[#8A8E75] mt-2 italic">
-            {genkitError.message || 'Unable to generate AI summary at this time.'}
+            {functionError.message || 'Unable to generate AI summary at this time. Please ensure Firebase Functions are deployed.'}
           </p>
         </div>
       );
