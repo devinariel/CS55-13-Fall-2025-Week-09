@@ -28,22 +28,28 @@ let aiInstance = null;
 /**
  * Set up Genkit with Google AI so we can use Gemini models
  * This is like turning on the AI engine and connecting it to Google's servers
- * @return {Object} The configured Genkit instance
+ * @return {Object} The configured Genkit AI instance
  */
 function getAiInstance() {
   // Check if we've already set up Genkit
   if (!aiInstance) {
     // Get our API key from the secret storage
     const apiKey = geminiApiKey.value();
+    // Check if we have an API key
+    if (!apiKey) {
+      throw new Error("GEMINI_API_KEY secret is not available");
+    }
     // Set up Genkit with the Google AI plugin and our API key
     aiInstance = genkit({
       // Tell Genkit to use the Google AI plugin with our API key
       plugins: [googleAI({apiKey: apiKey})],
       // Set how much information to log (info level shows important messages)
       logLevel: "info",
+      // Enable Firebase telemetry for better monitoring
+      enableFirebaseTelemetry: true,
     });
   }
-  // Give back the Genkit instance so we can use it
+  // Give back the Genkit AI instance so we can use it
   return aiInstance;
 }
 
@@ -112,7 +118,7 @@ exports.generateReviewSummary = onCall(
       ];
 
       // Set up Genkit so we can use it (this connects to Google's AI)
-      getAiInstance();
+      const ai = getAiInstance();
 
       // Try each model in the list until one works
       for (const modelName of modelsToTry) {
@@ -122,11 +128,14 @@ exports.generateReviewSummary = onCall(
 
           // Remove the "googleai/" part from the model name if it's there
           const cleanModelName = modelName.replace("googleai/", "");
-          // Get the specific AI model we want to use
-          const model = googleAI.model(cleanModelName);
+          // Build the full model name with the plugin prefix
+          const fullModelName = `googleai/${cleanModelName}`;
 
           // Ask the AI to generate a summary and wait for the answer
-          response = await model.generate({
+          // Use the ai.generate method with the model name
+          response = await ai.generate({
+            // Tell it which model to use
+            model: fullModelName,
             // Send the question/instruction we built earlier
             prompt: prompt,
             // Tell the AI how to behave
@@ -143,10 +152,19 @@ exports.generateReviewSummary = onCall(
           });
 
           // Check if the response has text we can use
-          const hasText = response && (response.text ||
+          // Genkit returns the text directly in response.text
+          const hasText = response && (
+            response.text ||
             // Or check if the text is in a different place in the response
             (response.candidates && response.candidates[0] &&
-             response.candidates[0].text));
+             response.candidates[0].text) ||
+            // Or check the content parts
+            (response.candidates && response.candidates[0] &&
+             response.candidates[0].content &&
+             response.candidates[0].content.parts &&
+             response.candidates[0].content.parts[0] &&
+             response.candidates[0].content.parts[0].text)
+          );
           // If we got text, we're done!
           if (hasText) {
             // Write a message saying which model worked
