@@ -49,8 +49,21 @@ export async function generateReviewSummary(reviewTexts) {
             errorMessage = errorData.error;
           } else if (errorData.error.message) {
             errorMessage = errorData.error.message;
+          } else if (errorData.error) {
+            // Try to extract any error message
+            errorMessage = JSON.stringify(errorData.error).substring(0, 200);
           }
+        } else if (errorData) {
+          // If error is not nested, try to get it directly
+          errorMessage = JSON.stringify(errorData).substring(0, 200);
         }
+        
+        // Log full error for debugging
+        console.error('Full API error response:', {
+          status: response.status,
+          errorData: errorData,
+          fullResponse: errorText
+        });
         
         return `Based on ${validTexts.length} ${validTexts.length === 1 ? 'review' : 'reviews'}, this clinician has received feedback from patients. ${errorMessage}`;
       }

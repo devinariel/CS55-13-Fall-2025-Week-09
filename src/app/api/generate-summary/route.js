@@ -183,6 +183,20 @@ export async function POST(request) {
         errorMessage += 'Steps: 1) Go to Firebase Console → App Hosting → Secrets, ';
         errorMessage += '2) Verify GEMINI_API_KEY exists and is correct, ';
         errorMessage += '3) Get a new API key from https://aistudio.google.com/app/apikey if needed.';
+        
+        // Include the actual error details if available
+        if (lastError?.errorData) {
+          try {
+            const errorDetails = typeof lastError.errorData === 'string' 
+              ? JSON.parse(lastError.errorData) 
+              : lastError.errorData;
+            if (errorDetails?.error?.message) {
+              errorMessage += ` Error: ${errorDetails.error.message}`;
+            }
+          } catch (e) {
+            // Ignore parse errors
+          }
+        }
       } else if (lastError?.status === 404) {
         errorMessage += 'The requested model was not found. Please check your API key has access to Gemini models. ';
       } else if (lastError?.status === 401 || lastError?.status === 403) {
@@ -191,16 +205,48 @@ export async function POST(request) {
         errorMessage += 'Rate limit exceeded. Please try again later. ';
       } else {
         errorMessage += `Last attempt returned ${lastError?.status || 'unknown'} status. `;
+        
+        // Try to include more details from the error
+        if (lastError?.errorData?.error?.message) {
+          errorMessage += ` Details: ${lastError.errorData.error.message}`;
+        } else if (lastError?.message) {
+          try {
+            const parsed = JSON.parse(lastError.message);
+            if (parsed?.error?.message) {
+              errorMessage += ` Details: ${parsed.error.message}`;
+            }
+          } catch (e) {
+            // If not JSON, include first 100 chars of message
+            errorMessage += ` Details: ${lastError.message.substring(0, 100)}`;
+          }
+        }
       }
       
       if (!lastError?.apiKeyInvalid) {
-        errorMessage += `Tried models: ${modelConfigs.map(c => c.model).join(', ')}`;
+        errorMessage += ` Tried models: ${modelConfigs.map(c => c.model).join(', ')}.`;
       }
+      
+      // Log full error details for debugging
+      console.error('Final error response:', {
+        errorMessage,
+        lastError,
+        apiKeyPresent: !!process.env.GEMINI_API_KEY || !!process.env.TTC_GEMINI_API_KEY,
+        apiKeyLength: (process.env.GEMINI_API_KEY || process.env.TTC_GEMINI_API_KEY || '').length
+      });
       
       return NextResponse.json(
         { 
           error: errorMessage,
-          details: lastError,
+          details: {
+            status: lastError?.status,
+            model: lastError?.model,
+            version: lastError?.version,
+            // Include error message but limit size
+            errorMessage: lastError?.message ? lastError.message.substring(0, 500) : undefined,
+            errorData: lastError?.errorData ? (typeof lastError.errorData === 'string' 
+              ? lastError.errorData.substring(0, 500) 
+              : JSON.stringify(lastError.errorData).substring(0, 500)) : undefined
+          },
           triedModels: lastError?.apiKeyInvalid ? [] : modelConfigs.map(c => `${c.model} (${c.version})`)
         },
         { status: 500 }
