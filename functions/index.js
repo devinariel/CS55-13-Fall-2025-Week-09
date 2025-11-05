@@ -7,8 +7,32 @@ require("./genkit.config.js");
 
 const {setGlobalOptions} = require("firebase-functions");
 const {onCall} = require("firebase-functions/v2/https");
+const {defineSecret} = require("firebase-functions/params");
 const logger = require("firebase-functions/logger");
-const {ai} = require("genkit");
+const {genkit} = require("genkit");
+const {googleAI} = require("@genkit-ai/googleai");
+
+// Define the secret for Gemini API key
+const geminiApiKey = defineSecret("GEMINI_API_KEY");
+
+// Initialize Genkit with Google AI plugin
+// Note: We'll initialize this inside the function to access the secret
+let aiInstance = null;
+
+/**
+ * Get or create the Genkit AI instance with Google AI plugin
+ * @return {Object} The initialized Genkit AI instance
+ */
+function getAiInstance() {
+  if (!aiInstance) {
+    const apiKey = geminiApiKey.value();
+    aiInstance = genkit({
+      plugins: [googleAI({apiKey: apiKey})],
+      logLevel: "info",
+    });
+  }
+  return aiInstance;
+}
 
 // For cost control, set the maximum number of containers
 setGlobalOptions({maxInstances: 10});
@@ -21,6 +45,7 @@ exports.generateReviewSummary = onCall(
     {
       cors: true,
       maxInstances: 5,
+      secrets: [geminiApiKey],
     },
     async (request) => {
       const {reviewTexts} = request.data;
@@ -57,6 +82,9 @@ exports.generateReviewSummary = onCall(
         "googleai/gemini-1.5-flash",
         "googleai/gemini-pro",
       ];
+
+      // Get AI instance (initialized with secret)
+      const ai = getAiInstance();
 
       for (const modelName of modelsToTry) {
         try {
