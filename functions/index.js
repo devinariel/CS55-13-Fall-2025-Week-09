@@ -16,7 +16,7 @@ const {defineSecret} = require("firebase-functions/params");
 // Get the logger so we can write messages about what's happening
 const logger = require("firebase-functions/logger");
 // Get Genkit, which is Google's tool for using AI
-const {genkit} = require("genkit");
+const {genkit, ai} = require("genkit");
 // Get the Google AI plugin, which connects Genkit to Google's Gemini AI
 const {googleAI} = require("@genkit-ai/googleai");
 
@@ -135,16 +135,16 @@ exports.generateReviewSummary = onCall(
 
           // Remove the "googleai/" part from the model name if it's there
           const cleanModelName = modelName.replace("googleai/", "");
-          // Get the configured Genkit AI instance
-          const ai = getAiInstance();
           // Build the full model name with the plugin prefix
           const fullModelName = `googleai/${cleanModelName}`;
 
+          // Get the model from Genkit using the ai helper
+          // The ai.model() method returns a model we can use
+          const model = ai.model(fullModelName);
+
           // Ask the AI to generate a summary and wait for the answer
-          // Use the ai.generate() method with the model name
-          response = await ai.generate({
-            // Tell it which model to use
-            model: fullModelName,
+          // Use the model.generate() method with the prompt and config
+          response = await model.generate({
             // Send the question/instruction we built earlier
             prompt: prompt,
             // Tell the AI how to behave
