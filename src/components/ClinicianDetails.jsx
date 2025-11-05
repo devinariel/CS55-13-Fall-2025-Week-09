@@ -4,7 +4,6 @@ import renderStars from "@/src/components/Stars.jsx";
 const ClinicianDetails = ({
   clinician,
   userId,
-  handleClinicianImage,
   setIsOpen,
   isOpen,
   children,
@@ -34,36 +33,26 @@ const ClinicianDetails = ({
             src="/review.svg"
           />
         )}
-        <label
-          onChange={(event) => handleClinicianImage(event.target)}
-          htmlFor="upload-image"
-          className="add"
-        >
-          <input
-            name=""
-            type="file"
-            id="upload-image"
-            className="file-input hidden w-full h-full"
-          />
-
-          <img className="add-image" src="/add.svg" alt="Add image" />
-        </label>
       </div>
 
       <div className="details__container">
         <div className="details">
-          <h2 className="text-2xl md:text-3xl mb-4" style={{ marginBottom: '15px' }}>{clinician.name}</h2>
+          <h2 className="text-2xl md:text-3xl mb-4 font-bold" style={{ marginBottom: '15px' }}>{clinician.name}</h2>
 
           <div className="clinician__rating mb-4" style={{ marginBottom: '15px' }}>
             <ul>{renderStars(clinician.avgRating)}</ul>
 
-            <span className="ml-2">({clinician.numRatings})</span>
+            <span className="ml-2">({clinician.numRatings || 0} reviews)</span>
           </div>
 
-          <p className="text-base md:text-lg mb-4" style={{ marginBottom: '15px', lineHeight: 'calc(1em + 15px)' }}>
+          <p className="text-base md:text-lg mb-4 font-medium" style={{ marginBottom: '15px', lineHeight: 'calc(1em + 15px)' }}>
             {clinician.specialization} | {clinician.city}
           </p>
-          {clinician.modality && <p className="text-sm md:text-base mb-4" style={{ color: '#F1EAD8', marginBottom: '15px', lineHeight: 'calc(1em + 15px)' }}>Modality: {clinician.modality}</p>}
+          {clinician.modality && (
+            <p className="text-sm md:text-base mb-4" style={{ color: '#F1EAD8', marginBottom: '15px', lineHeight: 'calc(1em + 15px)' }}>
+              Modality: {clinician.modality}
+            </p>
+          )}
           <div className="mt-6" style={{ marginTop: '15px' }}>
             {children}
           </div>

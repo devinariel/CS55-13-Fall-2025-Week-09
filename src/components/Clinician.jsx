@@ -6,7 +6,6 @@ import dynamic from "next/dynamic";
 import { getClinicianSnapshotById } from "../lib/firebase/therapyFirestore.js";
 import { useUser } from "../lib/getUser.js";
 import ClinicianDetails from "./ClinicianDetails.jsx"; // Assuming this path is correct relative to Clinician.jsx
-import { updateClinicianImage } from "../lib/firebase/storage.js";
 
 const ReviewDialog = dynamic(() => import("./ReviewDialog.jsx")); // Assuming this path is correct
 
@@ -21,19 +20,6 @@ export default function Clinician({ id, initialClinician, initialUserId, childre
   const onChange = (value, name) => {
     setReview({ ...review, [name]: value });
   };
-
-  async function handleClinicianImage(target) {
-    const image = target.files ? target.files[0] : null;
-    if (!image) return;
-
-    try {
-      const imageURL = await updateClinicianImage(id, image);
-      setClinicianDetails((prevDetails) => ({ ...prevDetails, photo: imageURL }));
-    } catch (error) {
-      console.error("Error updating clinician image:", error);
-      // Optionally show an error message to the user
-    }
-  }
 
   const handleClose = () => {
     setIsOpen(false);
@@ -60,7 +46,6 @@ export default function Clinician({ id, initialClinician, initialUserId, childre
       <ClinicianDetails
         clinician={clinicianDetails}
         userId={userId}
-        handleClinicianImage={handleClinicianImage}
         setIsOpen={setIsOpen} // Prop to open the dialog
         isOpen={isOpen}       // Prop to check if dialog should be open (though ReviewDialog controls its own state)
       >

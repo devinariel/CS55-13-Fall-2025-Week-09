@@ -70,7 +70,7 @@ export async function GeminiSummary({ clinicianId }) {
       // If no reviews, return JSX that shows a message to the user
       return (
         <div className="clinician__review_summary">
-          <p className="text-[#8A8E75] italic">No reviews yet. Be the first to share your experience!</p>
+          <p className="text-[#8A8E75] italic text-base">No reviews yet. Be the first to share your experience!</p>
         </div>
       );
     }
@@ -85,8 +85,8 @@ export async function GeminiSummary({ clinicianId }) {
       // Return JSX that shows the summary to the user with a note that it was created by AI
       return (
         <div className="clinician__review_summary">
-          <p className="text-[#68604D]">{summary}</p>
-          <p className="text-sm text-[#8A8E75] mt-2">✨ Summarized with Gemini via Genkit</p>
+          <p className="text-[#68604D] text-base leading-relaxed">{summary}</p>
+          <p className="text-sm text-[#8A8E75] mt-2 italic">✨ Summarized with Gemini via Genkit</p>
         </div>
       );
     } catch (functionError) {
@@ -95,7 +95,7 @@ export async function GeminiSummary({ clinicianId }) {
       // Return JSX that shows the user that reviews exist but we couldn't generate a summary
       return (
         <div className="clinician__review_summary">
-          <p className="text-[#68604D]">
+          <p className="text-[#68604D] text-base">
             {reviewTexts.length} {reviewTexts.length === 1 ? 'review' : 'reviews'} available.
           </p>
           <p className="text-sm text-[#8A8E75] mt-2 italic">
@@ -143,24 +143,24 @@ export async function GeminiSummary({ clinicianId }) {
     }
     
     // Return JSX that shows the error message to the user
+      return (
+        <div className="clinician__review_summary">
+          <p className="text-[#8A8E75] italic text-base">{errorMessage}</p>
+          <p className="text-xs text-[#8A8E75] mt-2">Check the browser console (F12) for more details.</p>
+        </div>
+      );
+    }
+  }
+
+  /**
+   * This shows a loading message while the AI is generating the summary
+   * It's like a "please wait" sign while the AI reads all the reviews
+   */
+  export function GeminiSummarySkeleton() {
+    // Return JSX that shows a message saying we're working on generating the summary
     return (
       <div className="clinician__review_summary">
-        <p className="text-[#8A8E75] italic">{errorMessage}</p>
-        <p className="text-xs text-[#8A8E75] mt-2">Check the browser console (F12) for more details.</p>
+        <p className="text-[#8A8E75] text-base">✨ Summarizing reviews with Gemini...</p>
       </div>
     );
   }
-}
-
-/**
- * This shows a loading message while the AI is generating the summary
- * It's like a "please wait" sign while the AI reads all the reviews
- */
-export function GeminiSummarySkeleton() {
-  // Return JSX that shows a message saying we're working on generating the summary
-  return (
-    <div className="clinician__review_summary">
-      <p className="text-[#8A8E75]">✨ Summarizing reviews with Gemini...</p>
-    </div>
-  );
-}
