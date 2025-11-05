@@ -172,7 +172,11 @@ export default function ClinicianDetailModal({ clinician, isOpen, onClose }) {
                 alt={clinician.name || 'Clinician'}
                 className="w-24 h-24 sm:w-32 sm:h-32 rounded-full object-cover border-4 border-white/50 shadow-lg flex-shrink-0"
                 onError={(e) => {
-                  e.target.src = '/profile.svg';
+                  // Fallback to default profile icon if image fails to load (CORS or other errors)
+                  if (e.target.src && !e.target.src.includes('/profile.svg')) {
+                    e.target.src = '/profile.svg';
+                    e.target.onerror = null; // Prevent infinite loop
+                  }
                 }}
               />
               <div className="flex-1 min-w-0">

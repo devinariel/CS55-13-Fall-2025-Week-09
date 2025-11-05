@@ -27,8 +27,11 @@ export default function ClinicianCard({ clinician, onSelect }) {
             alt={clinician.name || 'Clinician'} 
             className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-full object-cover border-3 border-[#D5C7AD] shadow-sm"
             onError={(e) => {
-              // Fallback to default profile icon if image fails to load
-              e.target.src = '/profile.svg';
+              // Fallback to default profile icon if image fails to load (CORS or other errors)
+              if (e.target.src && !e.target.src.includes('/profile.svg')) {
+                e.target.src = '/profile.svg';
+                e.target.onerror = null; // Prevent infinite loop
+              }
             }}
           />
         </div>

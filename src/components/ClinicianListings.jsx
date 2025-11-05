@@ -69,11 +69,13 @@ export default function ClinicianListings() {
   }, [clinicians, filters]);
 
   const handleCardClick = (clinician) => {
+    console.log('Card clicked, opening modal for:', clinician.name);
     setSelectedClinician(clinician);
     setIsModalOpen(true);
   };
 
   const handleCloseModal = () => {
+    console.log('Closing modal');
     setIsModalOpen(false);
     // Keep selectedClinician for potential navigation
   };
