@@ -1,6 +1,7 @@
 /**
  * Firebase Functions with Genkit for AI-powered review summaries
- * This file handles generating AI summaries of clinician reviews using Google's Gemini AI
+ * This file handles generating AI summaries of clinician reviews
+ * using Google's Gemini AI
  */
 
 // Load the configuration file that sets up Genkit
@@ -24,6 +25,8 @@ const geminiApiKey = defineSecret("GEMINI_API_KEY");
 
 // Create a variable to remember if we've set up Genkit yet
 let aiInstance = null;
+// Create a variable to remember the configured Google AI plugin instance
+let googleAIPlugin = null;
 
 /**
  * Set up Genkit with Google AI so we can use Gemini models
@@ -39,10 +42,12 @@ function getAiInstance() {
     if (!apiKey) {
       throw new Error("GEMINI_API_KEY secret is not available");
     }
+    // Create the Google AI plugin instance with our API key
+    googleAIPlugin = googleAI({apiKey: apiKey});
     // Set up Genkit with the Google AI plugin and our API key
     aiInstance = genkit({
       // Tell Genkit to use the Google AI plugin with our API key
-      plugins: [googleAI({apiKey: apiKey})],
+      plugins: [googleAIPlugin],
       // Set how much information to log (info level shows important messages)
       logLevel: "info",
       // Enable Firebase telemetry for better monitoring
@@ -53,13 +58,26 @@ function getAiInstance() {
   return aiInstance;
 }
 
-// Set a limit on how many copies of functions can run at the same time (helps control costs)
+/**
+ * Get the configured Google AI plugin instance so we can use its models
+ * @return {Object} The configured Google AI plugin instance
+ */
+function getGoogleAIPlugin() {
+  // Make sure Genkit is initialized first
+  getAiInstance();
+  // Return the plugin instance we created
+  return googleAIPlugin;
+}
+
+// Set a limit on how many copies of functions can run at the same time
+// (helps control costs)
 setGlobalOptions({maxInstances: 10});
 
 /**
  * This function takes review texts and asks AI to summarize them
- * It's like asking a smart assistant to read all the reviews and tell you what they say
- * People can call this from the web app to get AI summaries
+ * It's like asking a smart assistant to read all the reviews
+ * and tell you what they say. People can call this from the web app
+ * to get AI summaries
  */
 exports.generateReviewSummary = onCall(
     {
@@ -89,7 +107,8 @@ exports.generateReviewSummary = onCall(
 
       // Go through all reviews and only keep the ones that have actual text
       const validTexts = reviewTexts.filter(
-          // For each review text, check if it exists and has text after removing spaces
+          // For each review text, check if it exists and has text
+          // after removing spaces
           (text) => text && text.trim().length > 0);
       // Check if we have any valid reviews left after filtering
       if (validTexts.length === 0) {
@@ -118,7 +137,8 @@ exports.generateReviewSummary = onCall(
       ];
 
       // Set up Genkit so we can use it (this connects to Google's AI)
-      const ai = getAiInstance();
+      // Initialize the AI instance (this ensures Genkit is configured)
+      getAiInstance();
 
       // Try each model in the list until one works
       for (const modelName of modelsToTry) {
@@ -128,14 +148,15 @@ exports.generateReviewSummary = onCall(
 
           // Remove the "googleai/" part from the model name if it's there
           const cleanModelName = modelName.replace("googleai/", "");
-          // Build the full model name with the plugin prefix
-          const fullModelName = `googleai/${cleanModelName}`;
+          // Get the configured Google AI plugin instance
+          const plugin = getGoogleAIPlugin();
+          // Get the specific AI model we want to use from the plugin
+          // The plugin's model() method returns a model instance we can use
+          const model = plugin.model(cleanModelName);
 
           // Ask the AI to generate a summary and wait for the answer
-          // Use the ai.generate method with the model name
-          response = await ai.generate({
-            // Tell it which model to use
-            model: fullModelName,
+          // The model.generate() method takes a prompt and configuration
+          response = await model.generate({
             // Send the question/instruction we built earlier
             prompt: prompt,
             // Tell the AI how to behave
@@ -228,7 +249,8 @@ exports.generateReviewSummary = onCall(
 
       // Write a message saying everything worked
       logger.info("Review summary generated successfully");
-      // Send back the summary, removing any extra spaces at the beginning or end
+      // Send back the summary, removing any extra spaces
+      // at the beginning or end
       return {summary: summary.trim()};
     },
 );
