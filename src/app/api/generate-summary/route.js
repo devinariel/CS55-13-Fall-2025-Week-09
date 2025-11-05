@@ -8,7 +8,18 @@ export const runtime = 'nodejs';
 // This allows client components to request summaries without exposing the API key
 export async function POST(request) {
   try {
-    const { reviewTexts } = await request.json();
+    let requestBody;
+    try {
+      requestBody = await request.json();
+    } catch (parseError) {
+      console.error('Error parsing request body:', parseError);
+      return NextResponse.json(
+        { error: 'Invalid request body. Expected JSON with reviewTexts array.' },
+        { status: 400 }
+      );
+    }
+    
+    const { reviewTexts } = requestBody;
 
     if (!reviewTexts || !Array.isArray(reviewTexts) || reviewTexts.length === 0) {
       return NextResponse.json(
@@ -109,13 +120,23 @@ export async function POST(request) {
             errorData = { error: { message: errorText } };
           }
           
+          console.log('API error response:', {
+            status: response.status,
+            errorData: errorData,
+            model: config.model
+          });
+          
           // Check if it's an API key error
-          if (errorData?.error?.code === 400 && 
+          const isApiKeyError = errorData?.error?.code === 400 && 
               (errorData?.error?.message?.includes('API key') || 
-               errorData?.error?.details?.some(d => d.reason === 'API_KEY_INVALID'))) {
+               errorData?.error?.message?.includes('not valid') ||
+               errorData?.error?.details?.some(d => d.reason === 'API_KEY_INVALID'));
+          
+          if (isApiKeyError) {
             lastError = { 
               status: response.status, 
               message: errorText, 
+              errorData: errorData,
               model: config.model, 
               version: config.version,
               apiKeyInvalid: true
@@ -123,6 +144,17 @@ export async function POST(request) {
             console.error('API key is invalid! Stopping attempts.');
             break; // Don't try other models if API key is invalid
           }
+          
+          // For other 400/401/403 errors, still try next model
+          lastError = { 
+            status: response.status, 
+            message: errorText, 
+            errorData: errorData,
+            model: config.model, 
+            version: config.version
+          };
+          console.log(`Model ${config.model} returned ${response.status}, trying next...`);
+          continue;
         }
 
         // For other errors, save and try next
@@ -205,8 +237,28 @@ export async function POST(request) {
     return NextResponse.json({ summary: text.trim() });
   } catch (error) {
     console.error('Error in generate-summary API route:', error);
+    console.error('Error stack:', error.stack);
+    console.error('Error details:', {
+      name: error.name,
+      message: error.message,
+      cause: error.cause
+    });
+    
+    // Provide a more helpful error message
+    let errorMessage = 'Internal server error while generating summary.';
+    if (error.message) {
+      errorMessage = error.message;
+    }
+    
     return NextResponse.json(
-      { error: error.message || 'Internal server error' },
+      { 
+        error: errorMessage,
+        details: process.env.NODE_ENV === 'development' ? {
+          name: error.name,
+          message: error.message,
+          stack: error.stack
+        } : undefined
+      },
       { status: 500 }
     );
   }

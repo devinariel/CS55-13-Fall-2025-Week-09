@@ -34,14 +34,25 @@ export async function generateReviewSummary(reviewTexts) {
         console.error('API route error:', {
           status: response.status,
           statusText: response.statusText,
-          error: errorData
+          error: errorData,
+          fullResponse: errorText
         });
         
         if (response.status === 404) {
           return `Based on ${validTexts.length} ${validTexts.length === 1 ? 'review' : 'reviews'}, this clinician has received feedback from patients. AI summary service is not available. Please check server configuration.`;
         }
         
-        return `Based on ${validTexts.length} ${validTexts.length === 1 ? 'review' : 'reviews'}, this clinician has received feedback from patients. ${errorData.error || 'Unable to generate AI summary at this time.'}`;
+        // Extract error message from response
+        let errorMessage = 'Unable to generate AI summary at this time.';
+        if (errorData?.error) {
+          if (typeof errorData.error === 'string') {
+            errorMessage = errorData.error;
+          } else if (errorData.error.message) {
+            errorMessage = errorData.error.message;
+          }
+        }
+        
+        return `Based on ${validTexts.length} ${validTexts.length === 1 ? 'review' : 'reviews'}, this clinician has received feedback from patients. ${errorMessage}`;
       }
 
       const data = await response.json();
