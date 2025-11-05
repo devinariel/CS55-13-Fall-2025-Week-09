@@ -8,15 +8,15 @@ import { getFirestore } from "firebase/firestore";
 // server component: generate a one-sentence summary using Gemini
 export async function GeminiSummary({ clinicianId }) {
   try {
-    // get an authenticated Firebase server app for the current user
-    const { firebaseServerApp } = await getAuthenticatedAppForUser();
-    // fetch reviews for the clinician from Firestore
-    const reviews = await getReviewsByClinicianId(
-      // create a Firestore instance from the server app
-      getFirestore(firebaseServerApp),
-      // pass the clinician ID to fetch its reviews
-      clinicianId
-    );
+  // get an authenticated Firebase server app for the current user
+  const { firebaseServerApp } = await getAuthenticatedAppForUser();
+  // fetch reviews for the clinician from Firestore
+  const reviews = await getReviewsByClinicianId(
+    // create a Firestore instance from the server app
+    getFirestore(firebaseServerApp),
+    // pass the clinician ID to fetch its reviews
+    clinicianId
+  );
 
     // Filter out reviews with no text and get review texts
     const reviewTexts = reviews
@@ -61,15 +61,15 @@ export async function GeminiSummary({ clinicianId }) {
     const prompt = `Based on the following clinician reviews, create a concise one-sentence summary (max 100 words) of what people think of this mental health clinician. Focus on common themes, strengths, and overall fit.\n\nReviews:\n${reviewTexts.join('\n---\n')}`;
 
     // Call Gemini API directly
-    // Use gemini-1.5-flash (most reliable model)
-    const model = 'gemini-1.5-flash';
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+    // Try gemini-1.5-flash first, fallback to gemini-1.5-pro if needed
+    let model = 'gemini-1.5-flash';
+    let apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
     
     console.log('Calling Gemini API:', {
       model: model,
       reviewTextsCount: reviewTexts.length,
       promptLength: prompt.length,
-      apiUrlExists: !!apiUrl
+      hasApiKey: !!apiKey
     });
     
     let response;
@@ -95,6 +95,33 @@ export async function GeminiSummary({ clinicianId }) {
       });
       
       console.log('Gemini API response status:', response.status, response.statusText);
+      
+      // If model not found, try alternative
+      if (response.status === 404) {
+        console.log('Model not found, trying gemini-1.5-pro...');
+        model = 'gemini-1.5-pro';
+        apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+        response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            contents: [{
+              parts: [{
+                text: prompt
+              }]
+            }],
+            generationConfig: {
+              temperature: 0.7,
+              topK: 40,
+              topP: 0.95,
+              maxOutputTokens: 200,
+            }
+          }),
+        });
+        console.log('Fallback model response status:', response.status, response.statusText);
+      }
     } catch (fetchError) {
       console.error('Fetch error details:', {
         message: fetchError.message,
@@ -109,9 +136,20 @@ export async function GeminiSummary({ clinicianId }) {
       console.error('Gemini API error response:', {
         status: response.status,
         statusText: response.statusText,
-        errorText: errorText.substring(0, 500)
+        errorText: errorText.substring(0, 500),
+        model: model
       });
-      throw new Error(`Gemini API returned ${response.status}: ${errorText.substring(0, 200)}`);
+      
+      // Provide more specific error messages
+      if (response.status === 401 || response.status === 403) {
+        throw new Error(`Authentication failed (${response.status}). Please verify your Gemini API key is correct and has proper permissions.`);
+      } else if (response.status === 429) {
+        throw new Error('Rate limit exceeded. Please try again later.');
+      } else if (response.status === 400) {
+        throw new Error(`Bad request (${response.status}). ${errorText.substring(0, 100)}`);
+      } else {
+        throw new Error(`Gemini API returned ${response.status}: ${errorText.substring(0, 200)}`);
+      }
     }
 
     const data = await response.json();

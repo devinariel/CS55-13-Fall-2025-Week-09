@@ -338,17 +338,23 @@ a {
 
 .restaurant__review_summary,
 .clinician__review_summary {
-  max-width: 50vw;
+  max-width: 100%;
   min-height: 75px;
   padding: 20px;
-  background-color: white;
+  background-color: #F1EAD8;
   border-radius: 0.5rem;
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+  box-shadow: 0 2px 4px 0 rgb(0 0 0 / 0.1);
   margin-top: 20px;
+  border-left: 4px solid #BEC5A4;
   
   & p {
     color: #68604D;
     line-height: 1.6;
+    margin-bottom: 0.5rem;
+  }
+  
+  & p:last-child {
+    margin-bottom: 0;
   }
 }
 
