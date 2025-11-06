@@ -1,16 +1,17 @@
 // This component displays star ratings
-// size prop allows different star sizes: 'sm' (small), 'md' (medium), 'lg' (large)
+// size prop allows different star sizes: 'xs' (extra small), 'sm' (small), 'md' (medium), 'lg' (large)
 
-export default function renderStars(avgRating, size = 'md') {
-  // Define star sizes based on the size prop
-  // 'sm' = 12px (h-3 w-3), 'md' = 16px (h-4 w-4), 'lg' = 20px (h-5 w-5)
+export default function renderStars(avgRating, size = 'sm') {
+  // Define star sizes based on the size prop - all sizes reduced
+  // 'xs' = 8px (h-2 w-2), 'sm' = 10px (h-2.5 w-2.5), 'md' = 12px (h-3 w-3), 'lg' = 14px (h-3.5 w-3.5)
   const sizeClasses = {
-    sm: 'h-3 w-3',
-    md: 'h-4 w-4',
-    lg: 'h-5 w-5',
+    xs: 'h-2 w-2',
+    sm: 'h-2.5 w-2.5',
+    md: 'h-3 w-3',
+    lg: 'h-3.5 w-3.5',
   };
-  // Use medium size if size is not recognized
-  const starSize = sizeClasses[size] || sizeClasses.md;
+  // Use small size if size is not recognized (changed default from md to sm)
+  const starSize = sizeClasses[size] || sizeClasses.sm;
   
   const arr = [];
   for (let i = 0; i < 5; i++) {
