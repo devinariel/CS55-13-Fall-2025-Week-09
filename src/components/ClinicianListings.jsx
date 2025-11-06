@@ -3,10 +3,12 @@
 import React, { useState, useEffect, useMemo } from "react";
 import Filters from "./Filters";
 import ClinicianCard from "./ClinicianCard";
+import ClinicianDetail from "./ClinicianDetail";
 import { getClinicians } from "../lib/firebase/therapyFirestore";
 
 export default function ClinicianListings() {
   const [clinicians, setClinicians] = useState([]);
+  const [selectedClinician, setSelectedClinician] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filters, setFilters] = useState({
@@ -65,6 +67,15 @@ export default function ClinicianListings() {
     return filtered;
   }, [clinicians, filters]);
 
+  if (selectedClinician) {
+    return (
+      <ClinicianDetail
+        clinician={selectedClinician}
+        onBack={() => setSelectedClinician(null)}
+      />
+    );
+  }
+
   if (loading) {
     return (
       <div className="p-4">
@@ -103,11 +114,12 @@ export default function ClinicianListings() {
     <>
       <Filters filters={filters} setFilters={setFilters} />
       <div className="flex justify-center mt-6 mb-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full max-w-7xl px-4" style={{ marginLeft: '25px' }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 md:gap-10 lg:gap-12 w-full max-w-7xl px-4" style={{ marginLeft: '25px' }}>
           {filteredClinicians.map((clinician) => (
             <ClinicianCard
               key={clinician.id}
               clinician={clinician}
+              onSelect={() => setSelectedClinician(clinician)}
             />
           ))}
         </div>

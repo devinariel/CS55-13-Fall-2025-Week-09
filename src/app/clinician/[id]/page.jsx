@@ -38,13 +38,9 @@ export default async function Page(props) {
           initialClinician={clinician}
           initialUserId={currentUser?.uid || ""}
         >
-          {/* AI Summary prominently displayed at the top */}
-          <div className="ai-summary-section-full-page">
-            <h3 className="text-xl font-semibold text-[#68604D] mb-3">AI-Generated Summary</h3>
-            <Suspense fallback={<GeminiSummarySkeleton />}>
-              <GeminiSummary clinicianId={params.id} />
-            </Suspense>
-          </div>
+          <Suspense fallback={<GeminiSummarySkeleton />}>
+            <GeminiSummary clinicianId={params.id} />
+          </Suspense>
         </ClinicianDetailComponent>
       </div>
 

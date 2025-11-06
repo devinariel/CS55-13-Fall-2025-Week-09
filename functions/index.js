@@ -144,10 +144,7 @@ exports.generateReviewSummary = onCall(
 
           // Ask the AI to generate a summary and wait for the answer
           // Use the model.generate() method with the prompt and config
-          // Explicitly specify the model name to ensure we use the correct one
           response = await model.generate({
-            // Tell it which model to use (explicitly set to avoid defaults)
-            model: fullModelName,
             // Send the question/instruction we built earlier
             prompt: prompt,
             // Tell the AI how to behave

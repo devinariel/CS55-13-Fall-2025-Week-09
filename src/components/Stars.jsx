@@ -1,18 +1,6 @@
 // This component displays star ratings
-// size prop allows different star sizes: 'xs' (extra small), 'sm' (small), 'md' (medium), 'lg' (large)
 
-export default function renderStars(avgRating, size = 'sm') {
-  // Define star sizes based on the size prop - all sizes reduced
-  // 'xs' = 8px (h-2 w-2), 'sm' = 10px (h-2.5 w-2.5), 'md' = 12px (h-3 w-3), 'lg' = 14px (h-3.5 w-3.5)
-  const sizeClasses = {
-    xs: 'h-2 w-2',
-    sm: 'h-2.5 w-2.5',
-    md: 'h-3 w-3',
-    lg: 'h-3.5 w-3.5',
-  };
-  // Use small size if size is not recognized (changed default from md to sm)
-  const starSize = sizeClasses[size] || sizeClasses.sm;
-  
+export default function renderStars(avgRating) {
   const arr = [];
   for (let i = 0; i < 5; i++) {
     if (i < Math.floor(avgRating)) {
@@ -22,7 +10,7 @@ export default function renderStars(avgRating, size = 'sm') {
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
             fill="currentColor"
-            className={`${starSize} text-amber-400`}
+            className="h-8 w-8 text-amber-400"
           >
             <path
               fillRule="evenodd"
@@ -41,7 +29,7 @@ export default function renderStars(avgRating, size = 'sm') {
             viewBox="0 0 24 24"
             strokeWidth="1.5"
             stroke="currentColor"
-            className={`${starSize} text-amber-400`}
+            className="h-8 w-8 text-amber-400"
           >
             <path
               strokeLinecap="round"

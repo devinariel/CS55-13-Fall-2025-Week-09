@@ -34,13 +34,13 @@ export default function Filters({ filters, setFilters }) {
   };
 
   return (
-    <section className="filter bg-white p-5 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200" style={{ marginLeft: '25px', marginBottom: '1.5rem' }}>
-      <details className="filter-menu">
-        <summary className="cursor-pointer">
-          <img src="/filter.svg" alt="filter" className="w-6 h-6" />
-          <div className="ml-3">
-            <p className="font-semibold text-[#68604D] text-lg">Clinicians</p>
-            <p className="text-sm text-[#8A8E75] font-medium">Sorted by {filters.sort || "Rating"}</p>
+    <section className="filter bg-white p-4 rounded-lg shadow">
+      <details className="filter-menu ">
+        <summary>
+          <img src="/filter.svg" alt="filter" />
+          <div>
+            <p className="font-semibold text-[#68604D]">Clinicians</p>
+            <p className="text-sm text-[#8A8E75]">Sorted by {filters.sort || "Rating"}</p>
           </div>
         </summary>
 
@@ -87,26 +87,23 @@ export default function Filters({ filters, setFilters }) {
             icon="/sortBy.svg"
           />
 
-          <footer className="mt-6 pt-4 border-t border-[#D5C7AD]">
-            <menu className="flex justify-end gap-3">
+          <footer className="mt-4">
+            <menu>
               <button
-                className="button--cancel text-sm text-[#8A8E75] px-5 py-2 rounded-lg hover:bg-[#F1EAD8] transition-colors duration-200"
+                className="button--cancel text-sm text-[#8A8E75]"
                 type="reset"
                 onClick={() => {
                   setFilters({
                     city: "",
                     specialization: "",
                     modality: "",
-                    sort: "Rating",
+                    sort: "",
                   });
                 }}
               >
                 Reset
               </button>
-              <button 
-                type="submit" 
-                className="button--confirm px-5 py-2 rounded-lg font-medium transition-all duration-200 hover:shadow-md"
-              >
+              <button type="submit" className="button--confirm">
                 Apply Filters
               </button>
             </menu>
@@ -114,7 +111,7 @@ export default function Filters({ filters, setFilters }) {
         </form>
       </details>
 
-      <div className="tags mt-4">
+      <div className="tags">
         {Object.entries(filters).map(([type, value]) => { 
           // The main filter bar already specifies what
           // sorting is being used. So skip showing the
