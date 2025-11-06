@@ -736,13 +736,32 @@ a {
   }
 }
 
-/* Modern Card Styles */
-.clinician-card-modern {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+/* Psychology Today-Style Card Styles */
+.clinician-card-psychology-today {
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
-.clinician-card-modern:hover {
-  transform: translateY(-2px);
+.clinician-card-psychology-today:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+
+.clinician-card-image-wrapper {
+  position: relative;
+  transition: transform 0.3s ease;
+}
+
+.clinician-card-psychology-today:hover .clinician-card-image-wrapper {
+  transform: scale(1.05);
+}
+
+.clinician-card-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Modal Styles */
