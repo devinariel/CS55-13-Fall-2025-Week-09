@@ -18,7 +18,7 @@ export default function ClinicianCard({ clinician }) {
           <img 
             src={imageUrl} 
             alt={clinician.name || 'Clinician'} 
-            className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-full object-cover border-3 border-[#D5C7AD] shadow-sm"
+            className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover border-2 border-[#D5C7AD] shadow-sm"
             onError={(e) => {
               // Fallback to default profile icon if image fails to load (CORS or other errors)
               if (e.target.src && !e.target.src.includes('/profile.svg')) {
@@ -28,30 +28,30 @@ export default function ClinicianCard({ clinician }) {
             }}
           />
         </div>
-        <div className="flex-1 min-w-0 w-full sm:w-auto">
-          <h3 className="text-[#68604D] font-semibold text-lg mb-1.5 truncate leading-tight">
+        <div className="flex-1 min-w-0">
+          <h3 className="text-[#68604D] font-semibold text-base mb-1 truncate leading-tight">
             {clinician.name || 'Unknown'}
           </h3>
-          <p className="text-[#8A8E75] text-sm mb-2 truncate leading-relaxed">
+          <p className="text-[#8A8E75] text-sm mb-1.5 truncate leading-relaxed">
             {clinician.specialization || 'No specialization'}
           </p>
           {clinician.avgRating && (
-            <div className="flex items-center gap-2 mb-2">
-              <ul className="flex items-center gap-0.5">{renderStars(clinician.avgRating)}</ul>
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <ul className="flex items-center gap-0.5">{renderStars(clinician.avgRating, 'sm')}</ul>
               <span className="text-xs text-[#8A8E75]">
                 ({clinician.numRatings || 0})
               </span>
             </div>
           )}
-          <div className="flex items-center gap-3 text-sm">
-            <span className="text-[#68604D]">Avg Fit:</span>
+          <div className="flex items-center gap-2 text-xs text-[#68604D]">
+            <span>Avg Fit:</span>
             <strong className="text-[#BEC5A4] font-semibold">
               {Number(clinician.avgStyleMatch||0).toFixed(1)}
             </strong>
           </div>
           {clinician.city && (
-            <p className="text-xs text-[#8A8E75] mt-2 truncate">
-              📍 {clinician.city}
+            <p className="text-xs text-[#8A8E75] mt-1 truncate">
+              {clinician.city}
             </p>
           )}
         </div>

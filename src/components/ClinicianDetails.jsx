@@ -40,9 +40,9 @@ const ClinicianDetails = ({
           <h2 className="text-2xl md:text-3xl mb-4 font-bold" style={{ marginBottom: '15px' }}>{clinician.name}</h2>
 
           <div className="clinician__rating mb-4" style={{ marginBottom: '15px' }}>
-            <ul>{renderStars(clinician.avgRating)}</ul>
+            <ul className="flex items-center gap-0.5">{renderStars(clinician.avgRating, 'sm')}</ul>
 
-            <span className="ml-2">({clinician.numRatings || 0} reviews)</span>
+            <span className="ml-2 text-sm">({clinician.numRatings || 0} reviews)</span>
           </div>
 
           <p className="text-base md:text-lg mb-4 font-medium" style={{ marginBottom: '15px', lineHeight: 'calc(1em + 15px)' }}>
